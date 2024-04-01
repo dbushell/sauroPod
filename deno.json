@@ -1,0 +1,14 @@
+{
+  "imports": {
+    "@src/": "./src/",
+    "fs": "jsr:@std/fs@0.220",
+    "log": "jsr:@std/log@0.220",
+    "html": "jsr:@std/html@0.220",
+    "path": "jsr:@std/path@0.220",
+    "dinossr": "jsr:@ssr/dinossr@0.30",
+    "diplodocache": "jsr:@ssr/diplodocache@0.3.5",
+    "carriageway": "jsr:@dbushell/carriageway@0.12",
+    "xml-streamify": "jsr:@dbushell/xml-streamify@0.4",
+    "svelte": "npm:svelte@4.2.12/compiler"
+  }
+}
