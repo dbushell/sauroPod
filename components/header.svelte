@@ -8,6 +8,7 @@
   import {initLoad} from '@src/browser/state.ts';
   import Button from '@components/button.svelte';
   import Bookmarks from '@components/icons/bookmarks.svelte';
+  import Media from '@components/icons/media.svelte';
   import Podcasts from '@components/icons/podcasts.svelte';
   import Settings from '@components/icons/settings.svelte';
   import Stop from '@components/icons/stop.svelte';
@@ -27,7 +28,7 @@
       url = new URL(globalThis.location.href);
     });
     globalThis.addEventListener('app:player', (ev: CustomEvent) => {
-      isPlaying = 'episode' in ev.detail;
+      isPlaying = 'type' in ev.detail;
     });
     if (document.readyState === 'loading') {
       globalThis.addEventListener('DOMContentLoaded', initLoad);
@@ -37,31 +38,33 @@
   });
 
   $: isPodcasts = /^\/(podcasts|episodes)\//.test(url.pathname);
+  $: isMedia = /^\/(audiobooks)\//.test(url.pathname);
   $: isBookmarks = url.pathname.startsWith('/bookmarks/');
   $: isSettings = url.pathname.startsWith('/settings/');
 
   $: attr = [
     {
       'aria-current': isPodcasts ? 'page' : undefined,
-      'data-get': '/podcasts/',
-      href: '/podcasts/'
+      'data-get': '/podcasts/'
+    },
+    {
+      'aria-current': isMedia ? 'page' : undefined,
+      'data-get': '/audiobooks/'
     },
     {
       'aria-current': isBookmarks ? 'page' : undefined,
-      'data-get': '/bookmarks/',
-      href: '/bookmarks/'
+      'data-get': '/bookmarks/'
     },
     {
       'aria-current': isSettings ? 'page' : undefined,
-      'data-get': '/settings/',
-      href: '/settings/'
+      'data-get': '/settings/'
     }
   ];
 </script>
 
 <header class="Grid | Header">
   <div class="Header__main">
-    <a class="Header__logo | flex gap-2xs ai-center" href="/" data-get={'/podcasts/'}>
+    <a class="Header__logo | flex gap-2xs ai-center" href="/" data-get>
       <span>{app}</span>
     </a>
     {#if isPlaying}
@@ -76,10 +79,13 @@
         <Button icon small label="Podcasts" attr={{...attr[0]}}>
           <Podcasts slot="icon" />
         </Button>
-        <Button icon small label="Three" attr={{...attr[1]}}>
+        <Button icon small label="Media" attr={{...attr[1]}}>
+          <Media slot="icon" />
+        </Button>
+        <Button icon small label="Bookmarks" attr={{...attr[2]}}>
           <Bookmarks slot="icon" />
         </Button>
-        <Button icon small label="Three" attr={{...attr[2]}}>
+        <Button icon small label="Settings" attr={{...attr[3]}}>
           <Settings slot="icon" />
         </Button>
       </div>

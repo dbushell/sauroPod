@@ -11,7 +11,7 @@
   const progress = bookmark ? Math.round((100 / episode.duration) * bookmark.position) : 0;
 </script>
 
-<a href="/episodes/{episode.id}/" class="Stack gap-xs" data-play={episode.id}>
+<a href="/episodes/{episode.id}/" class="Stack gap-xs" data-play>
   <div class="flex gap-xs ai-center">
     <img
       alt={episode.title}
@@ -22,27 +22,27 @@
       decoding="async"
     />
     <div class="flex-grow-1">
-      <div class="flex jc-between ai-start">
-        <span class="p" class:color-success={episode.played}>
-          {#if episode.played}
-            {#if episode.cached}
-              <Cached />
-            {/if}
-            {#if episode.played}
-              <Played />
-            {/if}
+      <span class="p" class:color-success={episode.played}>
+        {#if episode.played}
+          {#if episode.cached}
+            <Cached />
           {/if}
-          <span>{episode.title}</span>
-        </span>
+          {#if episode.played}
+            <Played />
+          {/if}
+        {/if}
+        <span>{episode.title}</span>
+      </span>
+      <div class="flex jc-between ai-start">
+        <time class="color-subtle small" datetime={String(episode.date)}>
+          <span>{formatDate(new Date(episode.date))}</span>
+        </time>
         {#if episode.duration}
           <span class="color-subtle small monospace">
             {formatTime(episode.duration)}
           </span>
         {/if}
       </div>
-      <time class="color-subtle small" datetime={String(episode.date)}>
-        <span>{formatDate(new Date(episode.date))}</span>
-      </time>
     </div>
   </div>
   {#if progress}

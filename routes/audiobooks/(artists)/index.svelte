@@ -5,13 +5,13 @@
   export const pattern = '/';
 
   export const load: DinoLoad<Data> = async ({fetch, serverData}) => {
-    const response = await fetch(`/api/podcasts/`);
+    const response = await fetch(`/api/artists/`);
     if (!response.ok) {
-      serverData.podcasts = [];
+      serverData.artists = [];
       return;
     }
     const data = (await response.json()) as APIData;
-    serverData.podcasts = data.podcasts;
+    serverData.artists = data.artists;
   };
 </script>
 
@@ -19,22 +19,22 @@
   import {getContext} from 'svelte';
   import Layout from '@components/layout.svelte';
   import List from '@components/list/list.svelte';
-  import ListPodcast from '@components/list/podcast.svelte';
 
-  const {podcasts} = getContext<ServerData>('serverData');
+  const {artists} = getContext<ServerData>('serverData');
 
-  const title = 'Podcasts';
+  const title = 'Audiobooks';
 </script>
 
 <Layout {title}>
   <h1>
-    <a href="/podcasts/" data-get>
-      <span>{title}</span>
-    </a>
+    <span>{title}</span>
   </h1>
-  <List empty="No podcasts found">
-    {#each podcasts as podcast (podcast.id)}
-      <ListPodcast {podcast} />
+  <List empty="No audiobooks found">
+    {#each artists as artist (artist.id)}
+      <a class="flex gap-xs jc-between ai-start" href="/audiobooks/{artist.id}/" data-get>
+        <span class="p">{artist.title}</span>
+        <span class="color-subtle small monospace">{artist.count}</span>
+      </a>
     {/each}
   </List>
 </Layout>

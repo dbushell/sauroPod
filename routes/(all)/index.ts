@@ -1,4 +1,5 @@
 import type {DinoHandle} from 'dinossr';
+import type {Data} from '@src/types.ts';
 import {encodeHash} from '@src/vendor/murmurhash/mod.ts';
 
 export const pattern = '*';
@@ -7,7 +8,7 @@ export const order = 999;
 /** Map URL to body hash and last modified date */
 const modifiedMap = new Map<string, {hash: string; date: string}>();
 
-export const GET: DinoHandle = async ({request, response}) => {
+export const GET: DinoHandle<Data> = async ({request, response}) => {
   if (!response) return;
   if (response.ok && request.headers.has('x-fragment')) {
     const last = modifiedMap.get(request.url);

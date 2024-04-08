@@ -3,14 +3,14 @@
 </script>
 
 <script lang="ts">
-  import type {APIData, APIEpisode, PublicData} from '@src/types.ts';
+  import type {APIData, AudioEntity, PublicData} from '@src/types.ts';
   import {writable, derived, type Readable} from 'svelte/store';
   import {getContext, onMount} from 'svelte';
-  import {formatTime} from '@src/shared/mod.ts';
+  import {formatTime, getDataEntity} from '@src/shared/mod.ts';
   import Atom from '@components/player/atom.svelte';
   import Pause from '@components/player/pause.svelte';
   import Play from '@components/player/play.svelte';
-  import PlayerEpisode from '@components/player/episode.svelte';
+  import NowPlaying from '@components/player/playing.svelte';
   import Skip from '@components/player/skip.svelte';
   import {setMediaSession} from '@src/browser/session.ts';
   import {offline, offlineStore} from '@src/browser/offline.ts';
@@ -25,15 +25,15 @@
   const {version} = getContext<PublicData>('publicData');
 
   /** Active Episode and Podcast data */
-  const playerStore: Readable<APIEpisode | null> = derived([playStore], ([$playStore], set) => {
+  const playerStore: Readable<AudioEntity | null> = derived([playStore], ([$playStore], set) => {
     if (!browser || !$playStore) {
       set(null);
       return;
     }
-    fetch(`/api/episodes/${$playStore}/`)
+    fetch(`/api${$playStore}`)
       .then(async (response) => {
         const data = (await response.json()) as APIData;
-        set(data.episodes[0]);
+        set(getDataEntity(data));
       })
       .catch((err) => {
         console.error(err);
@@ -42,7 +42,7 @@
   });
 
   let ref: HTMLElement;
-  let oldPlayer: APIEpisode | null = null;
+  let oldEntity: AudioEntity | null = null;
   let audio: HTMLAudioElement;
   let audioSrc: string = '';
 
@@ -93,7 +93,7 @@
   /** Return all related `<progress>` bars */
   const queryProgress = () =>
     Array.from(
-      document.querySelectorAll(`progress[data-id="${$playerStore.episode.id}"]`)
+      document.querySelectorAll(`progress[data-id="${$playerStore.ids.at(-1)}"]`)
     ) as Array<HTMLProgressElement>;
 
   const setBookmark = () => {
@@ -104,7 +104,7 @@
       method: 'PUT',
       body: JSON.stringify({
         position,
-        ids: [$playerStore.podcast.id, $playerStore.episode.id],
+        ids: $playerStore.ids,
         date: new Date()
       }),
       headers: {
@@ -112,29 +112,29 @@
       }
     });
     queryProgress().forEach((progress) => {
-      progress.value = Math.round((100 / $playerStore.episode.duration) * position);
+      progress.value = Math.round((100 / $playerStore.duration) * position);
     });
   };
 
-  playerStore.subscribe(async (newPlayer) => {
+  playerStore.subscribe(async (newEntity) => {
     if (!browser) {
       return;
     }
     globalThis.dispatchEvent(
       new CustomEvent('app:player', {
-        detail: structuredClone(newPlayer ?? {})
+        detail: structuredClone(newEntity ?? {})
       })
     );
-    if (!newPlayer) {
+    if (!newEntity) {
       navigator.mediaSession.metadata = null;
-      oldPlayer = null;
+      oldEntity = null;
       resetAudio();
       return;
     }
     if (/^blob:/.test(audioSrc)) {
       URL.revokeObjectURL(audioSrc);
     }
-    isDownload = offline.has(newPlayer.episode.id);
+    isDownload = offline.has(newEntity.ids.at(-1));
     if (isOffline && !isDownload) {
       alert('Cannot play in offline mode');
       navigator.mediaSession.metadata = null;
@@ -142,7 +142,7 @@
       return;
     }
     if (isDownload) {
-      const blob = await offline.get(newPlayer.episode.id);
+      const blob = await offline.get(newEntity.ids.at(-1));
       if (blob) {
         audioSrc = URL.createObjectURL(blob);
       } else {
@@ -152,16 +152,16 @@
         return;
       }
     } else {
-      const url = new URL(`/api/audio/${newPlayer.episode.id}/`, globalThis.location.origin);
+      const url = new URL(`/api/audio/${newEntity.ids.join('/')}/`, globalThis.location.origin);
       audioSrc = url.href;
     }
-    if (oldPlayer && oldPlayer.episode.id === newPlayer.episode.id) {
+    if (oldEntity && oldEntity.ids.at(-1) === newEntity.ids.at(-1)) {
       setBookmark();
     } else {
       resetAudio();
     }
-    setMediaSession(newPlayer.podcast, newPlayer.episode);
-    oldPlayer = newPlayer;
+    setMediaSession(newEntity, version);
+    oldEntity = newEntity;
   });
 
   const onLoaded = () => {
@@ -170,7 +170,7 @@
     }
     isLoaded = true;
     rangeMax = Math.round(
-      Number.isFinite(audio.duration + 0) ? audio.duration : $playerStore.episode.duration
+      Number.isFinite(audio.duration + 0) ? audio.duration : $playerStore.duration
     );
     rangeEnd = formatTime(rangeMax);
     audio.playbackRate = playbackRate;
@@ -191,6 +191,7 @@
 
   const onPlay = () => {
     isPlaying = true;
+    clearInterval(bookmarkInterval);
     bookmarkInterval = globalThis.setInterval(() => {
       if (isPlaying) {
         setBookmark();
@@ -216,18 +217,19 @@
   };
 
   const onEnded = () => {
+    clearInterval(bookmarkInterval);
     queryProgress().forEach((progress) => {
-      const bookmark = progress.closest(`#bookmark-${$playerStore.episode.id}`);
+      const bookmark = progress.closest(`#bookmark-${$playerStore.ids.at(-1)}`);
       (bookmark ?? progress).remove();
     });
     isPlaying = false;
     if (/^blob:/.test(audioSrc)) {
       URL.revokeObjectURL(audioSrc);
     }
-    fetch(`/api/bookmarks/${$playerStore.episode.id}/`, {
+    fetch(`/api/bookmarks/${$playerStore.ids.join('/')}/`, {
       method: 'DELETE'
     });
-    offline.remove($playerStore.episode.id);
+    offline.remove($playerStore.ids.at(-1));
     playStore.set(null);
   };
 
@@ -262,7 +264,8 @@
     if (play) {
       ev.preventDefault();
       if (isPlaying) audio.pause();
-      setTimeout(() => playStore.set(play.dataset.play), 0);
+      const id = play.dataset.play || play.getAttribute('href');
+      setTimeout(() => playStore.set(id), 0);
       return;
     }
   };
@@ -335,22 +338,14 @@
 </script>
 
 <aside bind:this={ref} class="Grid | Container Container--light">
+  <h2 class="hidden">Audio Player</h2>
   <div class="Stack gap-s">
     {#if $playStore}
       <div class="flex flex-wrap gap-xs ai-center jc-between">
-        {#if $playStore === $playerStore?.episode?.id}
-          <h2 class="hidden">Audio Player</h2>
-          <PlayerEpisode
-            episode={$playerStore.episode}
-            podcast={$playerStore.podcast}
-            {isLoaded}
-            {isOffline}
-            {isDownload}
-          />
+        {#if $playerStore}
+          <NowPlaying player={{...$playerStore}} {isLoaded} {isOffline} {isDownload} />
         {:else}
-          <p>
-            <span>Loading...</span>
-          </p>
+          <p>Loading...</p>
         {/if}
       </div>
     {/if}

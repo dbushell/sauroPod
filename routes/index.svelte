@@ -1,7 +1,8 @@
 <script context="module" lang="ts">
   import type {DinoHandle} from 'dinossr';
+  import type {Data} from '@src/types.ts';
 
-  export const GET: DinoHandle = () => {
+  export const GET: DinoHandle<Data> = () => {
     return new Response(null, {
       status: 302,
       headers: {

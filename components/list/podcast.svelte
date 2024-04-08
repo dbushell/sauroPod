@@ -5,7 +5,7 @@
   export let podcast: Podcast;
 </script>
 
-<a class="flex gap-xs ai-center" href="/podcasts/{podcast.id}/" data-get="/podcasts/{podcast.id}/">
+<a class="flex gap-xs ai-center" href="/podcasts/{podcast.id}/" data-get>
   <img
     alt={podcast.title}
     src={`/api/artwork/${podcast.id}/`}
@@ -15,16 +15,16 @@
     decoding="async"
   />
   <span class="flex-grow-1">
+    <span class="block p">
+      {podcast.title}
+    </span>
     <div class="flex jc-between ai-start">
-      <span class="block p">
-        {podcast.title}
-      </span>
+      <time class="color-subtle small" datetime={String(podcast.modified)}>
+        {formatDate(new Date(podcast.modified))}
+      </time>
       <span class="color-subtle small monospace">
         {podcast.count ?? 0}
       </span>
     </div>
-    <time class="color-subtle small" datetime={String(podcast.modified)}>
-      {formatDate(new Date(podcast.modified))}
-    </time>
   </span>
 </a>

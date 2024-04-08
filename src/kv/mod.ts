@@ -9,6 +9,7 @@ export const uuidPattern = () => /^[a-f\d]{8}-[a-f\d]{4}-7[a-f\d]{3}-[a-f\d]{4}-
 
 export const db = await Deno.openKv(Deno.env.get('DENO_KV_URL') ?? './.data/denokv.sqlite');
 
+export * from './media.ts';
 export * from './bookmark.ts';
 export * from './episode.ts';
 export * from './podcast.ts';

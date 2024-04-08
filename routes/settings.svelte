@@ -1,10 +1,10 @@
 <script context="module" lang="ts">
   import type {DinoLoad} from 'dinossr';
-  import type {APIData, ServerData} from '@src/types.ts';
+  import type {APIData, Data, ServerData} from '@src/types.ts';
 
   export const pattern = '/';
 
-  export const load: DinoLoad = async ({fetch, serverData}) => {
+  export const load: DinoLoad<Data> = async ({fetch, serverData}) => {
     const response = await fetch(`/api/podcasts/`);
     if (!response.ok) {
       serverData.podcasts = [];
@@ -36,7 +36,7 @@
     </div>
   </form>
   <List empty="No podcasts found">
-    {#each podcasts as { podcast } (podcast.id)}
+    {#each podcasts as podcast (podcast.id)}
       <form class="Stack gap-xs" method="POST" action="/api/podcasts/{podcast.id}/">
         <label for="{podcast.id}-url" class="small">{podcast.title}:</label>
         <div class="flex gap-xs">

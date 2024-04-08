@@ -1,5 +1,6 @@
 # Required environment variables:
 # DENO_KV_ACCESS_TOKEN - random string
+# APP_MEDIA_PATH - directory path
 # APP_CACHE_PATH - directory path
 # APP_DATA_PATH - directory path
 # APP_LOG_PATH - directory path
@@ -33,10 +34,12 @@ services:
     environment:
       DENO_KV_URL: http://denokv:4512
       DENO_KV_ACCESS_TOKEN: ${DENO_KV_ACCESS_TOKEN}
+      APP_MEDIA_PATH: /mnt/media
       APP_CACHE_PATH: /mnt/cache
       APP_LOG_PATH: /mnt/log
       APP_LOG_LEVEL: ${APP_LOG_LEVEL}
     volumes:
+      - ${APP_MEDIA_PATH}:/mnt/media:ro
       - ${APP_CACHE_PATH}:/mnt/cache
       - ${APP_LOG_PATH}:/mnt/log
       - ./components:/app/components:ro

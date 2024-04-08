@@ -2,7 +2,7 @@
  * Handle global event listeners.
  * @module
  */
-import type {Bookmark, Episode, Podcast} from '@src/types.ts';
+import type {Bookmark, Episode, Podcast, Song} from '@src/types.ts';
 import * as log from 'log';
 import * as kv from '@src/kv/mod.ts';
 import {cache, defaults} from '@src/cache.ts';
@@ -50,6 +50,15 @@ addEventListener('episode:delete', (async (event: CustomEvent<Episode>) => {
   cache.purge(episode.url);
   // Delete Bookmark
   const bookmark = await kv.getBookmark(episode.podcastId, episode.id);
+  if (!bookmark) return;
+  await kv.deleteBookmark(bookmark);
+}) as EventListener);
+
+addEventListener('song:delete', (async (event: CustomEvent<Song>) => {
+  const song = event.detail;
+  log.debug(`Delete song: "${song.title}"`);
+  // Delete Bookmark
+  const bookmark = await kv.getBookmark(song.artistId, song.albumId, song.id);
   if (!bookmark) return;
   await kv.deleteBookmark(bookmark);
 }) as EventListener);

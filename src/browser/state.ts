@@ -130,9 +130,10 @@ const initGet = (el: HTMLElement) => {
   el.addEventListener('pointerdown', (ev: PointerEvent) => {
     // Ignore right-click
     if (ev.button) return;
-    const target = (ev.target as HTMLElement).closest('[data-get]')!;
+    const target = (ev.target as HTMLElement).closest('[data-get]')! as HTMLElement;
     document.documentElement.classList.add('navigating');
-    const url = new URL(target.getAttribute('data-get') ?? '', globalThis.location.origin);
+    const href = target.dataset.get || target.getAttribute('href');
+    const url = new URL(href ?? '', globalThis.location.origin);
     globalThis.localStorage.setItem('goto', url.href);
     preFetch(url);
   });

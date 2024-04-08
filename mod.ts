@@ -1,3 +1,4 @@
+import type {Data} from '@src/types.ts';
 import * as log from 'log';
 import {DinoSsr} from 'dinossr';
 import {cache} from '@src/cache.ts';
@@ -6,7 +7,7 @@ import '@src/log.ts';
 import '@src/events.ts';
 import '@src/shutdown.ts';
 
-const dinossr = new DinoSsr(import.meta.dirname, {
+const dinossr = new DinoSsr<Data>(import.meta.dirname, {
   dev: true
 });
 
@@ -29,10 +30,16 @@ const syncNow = async () => {
   const now = performance.now();
   await sync.syncPodcasts();
   await sync.syncAllEpisodes();
-  log.info(`Sync in ${((performance.now() - now) / 1000).toFixed(2)}s`);
+  log.info(`Podcast sync in ${((performance.now() - now) / 1000).toFixed(2)}s`);
 };
 
 Deno.cron('podcast sync', '*/15 * * * *', {}, syncNow);
+
+Deno.cron('media sync', '0 * * * *', {}, async () => {
+  const now = performance.now();
+  await sync.syncMedia();
+  log.info(`Media sync in ${((performance.now() - now) / 1000).toFixed(2)}s`);
+});
 
 Deno.cron('cache clean', '0 0 * * *', {}, async () => {
   await cache.clean();
@@ -42,3 +49,5 @@ Deno.cron('cache clean', '0 0 * * *', {}, async () => {
 if (new Date().getMinutes() % 15 < 10) {
   await syncNow();
 }
+
+sync.syncMedia();

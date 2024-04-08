@@ -2,6 +2,7 @@
  * Data validation module.
  * @module
  */
+import type {Artist, Album, Song} from '@src/types.ts';
 import type {Bookmark, Episode, Podcast} from '@src/types.ts';
 import {uuidPattern} from './mod.ts';
 
@@ -70,5 +71,29 @@ export const isEpisode = (data: Episode): boolean => {
 export const isPodcast = (data: Podcast): boolean => {
   if (!isUUID(data.id)) return false;
   if (!isURL(data.url, false)) return false;
+  return true;
+};
+
+/** Validate an Artist object */
+export const isArtist = (data: Artist): boolean => {
+  if (!isUUID(data.id)) return false;
+  if (data.count < 0) return false;
+  return true;
+};
+
+/** Validate an Album object */
+export const isAlbum = (data: Album): boolean => {
+  if (!isUUID(data.id)) return false;
+  if (!isUUID(data.artistId)) return false;
+  if (data.count < 0) return false;
+  return true;
+};
+
+/** Validate a Song object */
+export const isSong = (data: Song): boolean => {
+  if (!isUUID(data.id)) return false;
+  if (!isUUID(data.artistId)) return false;
+  if (!isUUID(data.albumId)) return false;
+  if (data.duration < 0) return false;
   return true;
 };

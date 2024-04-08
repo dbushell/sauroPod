@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
   import type {DinoLoad} from 'dinossr';
-  import type {APIData, PublicData, ServerData} from '@src/types.ts';
+  import type {APIData, Data, PublicData, ServerData} from '@src/types.ts';
 
-  export const pattern =
-    '/:id([a-f\\d]{8}-[a-f\\d]{4}-7[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12})/:page(\\d+)?/';
+  const id = '[a-f\\d]{8}-[a-f\\d]{4}-7[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
+  export const pattern = `/:id(${id})/:page(\\d+)?/`;
 
-  export const load: DinoLoad = async ({fetch, params, publicData, serverData}) => {
+  export const load: DinoLoad<Data> = async ({fetch, params, publicData, serverData}) => {
     const page = Number.parseInt(params.page || '1');
     const responses = [
       fetch(`/api/bookmarks/${params.id}/`),
@@ -37,7 +37,7 @@
   const {bookmarks, podcasts} = getContext<ServerData>('serverData');
   const {page} = getContext<PublicData>('publicData');
 
-  const podcast = podcasts[0].podcast;
+  const podcast = podcasts[0];
   const episodes = podcasts[0].episodes;
 
   const hasPrev = page > 1;
@@ -49,13 +49,13 @@
   if (page > 1) title += ` (${page})`;
 
   const findBookmark = (episodeId: string) => {
-    return bookmarks.find((b) => b.bookmark.ids[1] === episodeId)?.bookmark;
+    return bookmarks.find((b) => b.ids[1] === episodeId);
   };
 </script>
 
 <Layout {title}>
   <h1>
-    <a href="/podcasts/{podcast.id}/" data-get="/podcasts/{podcast.id}/">
+    <a href="/podcasts/{podcast.id}/" data-get>
       <span>{title}</span>
     </a>
   </h1>

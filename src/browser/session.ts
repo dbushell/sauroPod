@@ -6,7 +6,7 @@
  * @see {@link https://dbushell.com/2024/04/02/offscreen-canvas-and-web-workers/}
  */
 /// <reference lib="DOM"/>
-import type {Episode, Podcast} from '@src/types.ts';
+import type {AudioEntity} from '@src/types.ts';
 
 /** Generate an image and return Blob URL and type */
 const createImage = async (
@@ -49,11 +49,15 @@ const setMetadata = async (title: string, artist: string, image: HTMLImageElemen
 };
 
 /** Update media session with currently playing */
-export const setMediaSession = (podcast: Podcast, episode: Episode) => {
-  const title = episode.title;
-  const artist = podcast.title;
+export const setMediaSession = (player: AudioEntity, version: string) => {
+  const title = player.titles.at(-1)!;
+  const artist = player.titles.at(-2)!;
   const image = new Image();
-  image.src = new URL(`/api/artwork/${podcast.id}/`, globalThis.location.origin).href;
+  const src =
+    player.type === 'audiobook'
+      ? `/512x512.png?v=${version}`
+      : `/api/artwork/${player.ids.at(-2)}/`;
+  image.src = new URL(src, globalThis.location.origin).href;
   image.addEventListener('load', () => setMetadata(title, artist, image));
   navigator.mediaSession.metadata = new MediaMetadata({
     title,

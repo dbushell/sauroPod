@@ -4,31 +4,31 @@ import * as kv from '@src/kv/mod.ts';
 import * as sync from '@src/sync/mod.ts';
 import {redirect} from '@src/shared/mod.ts';
 
-export const pattern =
-  '/:id([a-f\\d]{8}-[a-f\\d]{4}-7[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12})?/:page(\\d+)?/';
+const id = '[a-f\\d]{8}-[a-f\\d]{4}-7[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
+export const pattern = `/:id(${id})?/:page(\\d+)?/`;
 
 // Get all Podcasts with latest Episode
 // Get single Podcast by ID with Episodes by page
 export const GET: DinoHandle = async ({match}): Promise<Response> => {
   const error = new Response(null, {status: 404});
   const {id, page} = match.pathname.groups;
-  // Get single Podcast with Episodes
+  // Get single Podcast with Episodes by page
   if (id) {
     const podcast = await kv.getPodcast(id);
     if (!podcast) return error;
     let index = Number.parseInt(page || '1');
     if (index < 2) index = 1;
     const episodes = await kv.getEpisodesByPage(id, 100, index - 1);
-    const data: APIData = {podcasts: [{podcast, episodes}]};
+    const data: APIData = {podcasts: [{...podcast, episodes}]};
     return Response.json(data);
   }
-  // Get all Podcasts
+  // Get all Podcasts with latest Episode
   const podcasts = await kv.getPodcasts();
   const data: APIData = {podcasts: []};
   for (const podcast of podcasts) {
     const episode = await kv.getLatestEpisode(podcast.id);
     data.podcasts!.push({
-      podcast,
+      ...podcast,
       episodes: episode ? [episode] : []
     });
   }

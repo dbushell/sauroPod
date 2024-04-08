@@ -4,12 +4,13 @@
  */
 import type {Bookmark, Podcast} from '@src/types.ts';
 import {db, isBookmark, isUUID} from './mod.ts';
+import {newestSort} from '@src/shared/mod.ts';
 
 /** Return all Bookmarks */
 export const getBookmarks = async (): Promise<Array<Bookmark>> => {
   const list = db.list<Bookmark>({prefix: ['bookmark']});
   const bookmarks = await Array.fromAsync(list, ({value}) => value);
-  bookmarks.sort((a, b) => b.date.getTime() - a.date.getTime());
+  newestSort<Bookmark>(bookmarks, 'date');
   return bookmarks;
 };
 
@@ -17,7 +18,7 @@ export const getBookmarks = async (): Promise<Array<Bookmark>> => {
 export const getBookmarksByPodcast = async (podcast: Podcast): Promise<Array<Bookmark>> => {
   const list = db.list<Bookmark>({prefix: ['bookmark', podcast.id]});
   const bookmarks = await Array.fromAsync(list, ({value}) => value);
-  bookmarks.sort((a, b) => b.date.getTime() - a.date.getTime());
+  newestSort<Bookmark>(bookmarks, 'date');
   return bookmarks;
 };
 

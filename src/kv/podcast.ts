@@ -4,12 +4,13 @@
  */
 import type {Podcast} from '@src/types.ts';
 import {db, isPodcast, isURL, isUUID} from './mod.ts';
+import {newestSort} from '@src/shared/mod.ts';
 
 /** Return all Podcasts */
 export const getPodcasts = async (): Promise<Array<Podcast>> => {
   const list = db.list<Podcast>({prefix: ['podcast']});
   const podcasts = await Array.fromAsync(list, ({value}) => value);
-  podcasts.sort((a, b) => b.modified.getTime() - a.modified.getTime());
+  newestSort<Podcast>(podcasts, 'modified');
   return podcasts;
 };
 

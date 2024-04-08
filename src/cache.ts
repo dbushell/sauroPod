@@ -4,8 +4,9 @@
  */
 import * as log from 'log';
 import * as path from 'path';
-import {Diplodocache} from 'diplodocache';
+import {Diplodocache, type FetchOptions} from 'diplodocache';
 import {logLevel, logLocale} from '@src/log.ts';
+import {deepFreeze} from '@src/shared/mod.ts';
 
 export const accept = {
   rss: ['application/rss+xml;q=0.9', 'application/xml;q=0.8', 'text/xml;q=0.7'] as const,
@@ -18,21 +19,21 @@ export const accept = {
     'image/jpg;q=0.7'
   ] as const
 };
-Object.freeze(accept);
+deepFreeze(accept);
 
 export const defaults = {
   image: {
-    accept: [...accept.image],
+    accept: [...accept.image] as const,
     compress: false,
     maxAge: 1000 * 60 * 60 * 24 * 2
-  },
+  } as Readonly<FetchOptions>,
   audio: {
     accept: [...accept.audio],
     compress: false,
     maxAge: 1000 * 60 * 60 * 24 * 30
-  }
+  } as Readonly<FetchOptions>
 } as const;
-Object.freeze(defaults);
+deepFreeze(defaults);
 
 const cachePath = Deno.env.get('APP_CACHE_PATH') ?? path.join(Deno.cwd(), './.cache');
 
