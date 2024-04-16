@@ -14,6 +14,7 @@ export type Episode = {
   /** Audio duration (seconds) */
   duration: number;
   mimetype: string;
+  guid?: string;
   played?: boolean;
   cached?: boolean;
 };

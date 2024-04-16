@@ -8,6 +8,7 @@ import * as log from 'log';
 import * as html from 'html';
 import * as xml from 'xml-streamify';
 import * as kv from '@src/kv/mod.ts';
+import {encodeHash} from '@src/vendor/murmurhash/mod.ts';
 
 const queue = new Queue<Podcast, void>({
   concurrency: 5
@@ -39,7 +40,7 @@ const callback = async (podcast: Podcast): Promise<void> => {
     const url = new URL(enclosure.attributes.url);
     url.search = '';
     const pubDate = html.unescape(node.first('pubDate')?.innerText.trim() ?? '');
-    newEpisodes.push({
+    const newEp: Episode = {
       duration,
       id: '',
       podcastId: podcast.id,
@@ -47,7 +48,12 @@ const callback = async (podcast: Podcast): Promise<void> => {
       title: html.unescape(node.first('title')?.innerText.trim() ?? ''),
       mimetype: enclosure.attributes.type ?? '',
       date: new Date(pubDate || Date.now())
-    });
+    };
+    // Add GUID if specified to help matching later
+    let guid = node.first('guid')?.innerText.trim() ?? '';
+    guid = guid.replace(/^<!\[CDATA\[(.*)]]>$/, '$1');
+    if (guid) newEp.guid = encodeHash(guid);
+    newEpisodes.push(newEp);
   }
   clearTimeout(timeout);
   if (!newEpisodes.length) {
@@ -62,8 +68,15 @@ const callback = async (podcast: Podcast): Promise<void> => {
   const episodeIds = new Set<string>();
   const oldEpisodes = await kv.getEpisodes(podcast.id);
   for (const newEp of newEpisodes) {
+    let oldEp: Episode | undefined;
+    // Find existing episode by guid
+    if (newEp.guid) {
+      oldEp = oldEpisodes.find((e) => e.guid === newEp.guid);
+    }
     // Find existing episode by title and url
-    const oldEp = oldEpisodes.find((e) => e.title === newEp.title && e.url === newEp.url);
+    if (!oldEp) {
+      oldEp = oldEpisodes.find((e) => e.title === newEp.title && e.url === newEp.url);
+    }
     // Add new episode if not found
     if (oldEp === undefined) {
       await kv.setEpisode(newEp);
@@ -73,7 +86,7 @@ const callback = async (podcast: Podcast): Promise<void> => {
     newEp.id = oldEp.id;
     episodeIds.add(newEp.id);
     const changed = Object.entries(newEp).find(
-      ([key, value]) => oldEp[key as keyof Episode]!.toString() !== value.toString()
+      ([key, value]) => key in oldEp && oldEp[key as keyof Episode]!.toString() !== value.toString()
     );
     if (changed) {
       await kv.setEpisode(newEp);
