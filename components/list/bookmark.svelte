@@ -16,6 +16,8 @@
       ? `/podcasts/${entity.ids[0]}/`
       : `/audiobooks/${entity.ids[0]}/${entity.ids[1]}/`;
 
+  const dataAudio = `/api/audio/${entity.ids.join('/')}/`;
+
   const dataPlay =
     entity.type === 'podcast' ? `/episodes/${entity.ids[1]}/` : `/songs/${entity.ids.join('/')}/`;
 </script>
@@ -49,7 +51,7 @@
         small
         type="button"
         label="remove offline download"
-        attr={{'data-purge': `${entity.ids.at(-1)}`}}
+        attr={{'data-purge': dataAudio}}
         classes={['hidden']}
       >
         <Trash slot="icon" />
@@ -59,7 +61,7 @@
         small
         type="button"
         label="download for offline play"
-        attr={{'data-download': `${entity.ids.at(-1)}`}}
+        attr={{'data-download': dataAudio}}
       >
         <Download slot="icon" />
       </Button>

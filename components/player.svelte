@@ -249,15 +249,17 @@
     if (download) {
       ev.preventDefault();
       download.disabled = true;
-      const id = download.dataset.download;
-      offline.add({id, url: new URL(`/api/audio/${id}/`, globalThis.location.origin)});
+      const url = new URL(download.dataset.download, globalThis.location.origin);
+      const ids = url.pathname.split('/').filter((p) => p.length);
+      offline.add({id: ids.at(-1), url});
       return;
     }
     const purge = (ev.target as HTMLElement).closest('[data-purge]') as HTMLButtonElement;
     if (purge) {
       ev.preventDefault();
       purge.disabled = true;
-      offline.remove(purge.dataset.purge);
+      const ids = purge.dataset.purge.split('/').filter((p) => p.length);
+      offline.remove(ids.at(-1));
       return;
     }
     const play = (ev.target as HTMLElement).closest('[data-play]') as HTMLElement;
@@ -278,15 +280,15 @@
       () => {
         document.querySelectorAll('[data-download]').forEach((node) => {
           const button = node as HTMLButtonElement;
-          const id = button.dataset.download;
-          button.classList.toggle('hidden', offline.has(id));
-          button.disabled = offline.has(id);
+          const ids = button.dataset.download.split('/').filter((p) => p.length);
+          button.classList.toggle('hidden', offline.has(ids.at(-1)));
+          button.disabled = offline.has(ids.at(-1));
         });
         document.querySelectorAll('[data-purge]').forEach((node) => {
           const button = node as HTMLButtonElement;
-          const id = button.dataset.purge;
-          button.classList.toggle('hidden', !offline.has(id));
-          button.disabled = !offline.has(id);
+          const ids = button.dataset.purge.split('/').filter((p) => p.length);
+          button.classList.toggle('hidden', !offline.has(ids.at(-1)));
+          button.disabled = !offline.has(ids.at(-1));
         });
       },
       immediate ? 0 : 100
