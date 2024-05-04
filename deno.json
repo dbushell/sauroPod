@@ -1,16 +1,16 @@
 {
   "imports": {
     "@src/": "./src/",
-    "fs": "jsr:@std/fs@0.221",
-    "log": "jsr:@std/log@0.221",
-    "html": "jsr:@std/html@0.221",
-    "path": "jsr:@std/path@0.221",
-    "file-server": "jsr:@std/http@0.221/file-server",
+    "fs": "jsr:@std/fs@0.224",
+    "log": "jsr:@std/log@0.224",
+    "html": "jsr:@std/html@0.224",
+    "path": "jsr:@std/path@0.224",
+    "file-server": "jsr:@std/http@0.224/file-server",
     "dinossr": "jsr:@ssr/dinossr@0.31",
-    "diplodocache": "jsr:@ssr/diplodocache@0.3.5",
+    "diplodocache": "jsr:@ssr/diplodocache@0.4.1",
     "carriageway": "jsr:@dbushell/carriageway@0.12",
     "xml-streamify": "jsr:@dbushell/xml-streamify@0.4",
     "audio-duration": "jsr:@dbushell/audio-duration@0.5",
-    "svelte": "npm:svelte@4.2.12/compiler"
+    "svelte": "npm:svelte@4.2.15/compiler"
   }
 }
