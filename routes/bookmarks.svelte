@@ -31,7 +31,9 @@
   <h1>{title}</h1>
   <List empty="No bookmarks found">
     {#each bookmarks as bookmark}
-      <ListBookmark entity={getBookmarkEntity(bookmark)} />
+      <li>
+        <ListBookmark entity={getBookmarkEntity(bookmark)} />
+      </li>
     {/each}
   </List>
 </Layout>

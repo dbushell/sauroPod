@@ -34,7 +34,9 @@
   </h1>
   <List empty="No podcasts found">
     {#each podcasts as podcast (podcast.id)}
-      <ListPodcast {podcast} />
+      <li>
+        <ListPodcast {podcast} />
+      </li>
     {/each}
   </List>
 </Layout>

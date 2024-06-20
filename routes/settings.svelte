@@ -37,20 +37,22 @@
   </form>
   <List empty="No podcasts found">
     {#each podcasts as podcast (podcast.id)}
-      <form class="Stack gap-xs" method="POST" action="/api/podcasts/{podcast.id}/">
-        <label for="{podcast.id}-url" class="small">{podcast.title}:</label>
-        <div class="flex gap-xs">
-          <input
-            type="url"
-            class="Field flex-grow-1"
-            id="{podcast.id}-url"
-            value={podcast.url}
-            readonly
-            required
-          />
-          <Button type="submit" label="Remove" classes={['flex-shrink-0']} />
-        </div>
-      </form>
+      <li>
+        <form class="Stack gap-xs" method="POST" action="/api/podcasts/{podcast.id}/">
+          <label for="{podcast.id}-url" class="small">{podcast.title}:</label>
+          <div class="flex gap-xs">
+            <input
+              type="url"
+              class="Field flex-grow-1"
+              id="{podcast.id}-url"
+              value={podcast.url}
+              readonly
+              required
+            />
+            <Button type="submit" label="Remove" classes={['flex-shrink-0']} />
+          </div>
+        </form>
+      </li>
     {/each}
   </List>
 </Layout>

@@ -31,10 +31,12 @@
   </h1>
   <List empty="No audiobooks found">
     {#each artists as artist (artist.id)}
-      <a class="flex gap-xs jc-between ai-start" href="/audiobooks/{artist.id}/" data-get>
-        <span class="p">{artist.title}</span>
-        <span class="color-subtle small monospace">{artist.count}</span>
-      </a>
+      <li>
+        <a class="flex gap-xs jc-between ai-start" href="/audiobooks/{artist.id}/" data-get>
+          <span class="p">{artist.title}</span>
+          <span class="color-subtle small monospace">{artist.count}</span>
+        </a>
+      </li>
     {/each}
   </List>
 </Layout>

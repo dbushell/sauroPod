@@ -39,6 +39,8 @@
     </a>
   </h1>
   <List>
-    <ListEpisode {bookmark} {episode} {podcast} />
+    <li>
+      <ListEpisode {bookmark} {episode} {podcast} />
+    </li>
   </List>
 </Layout>

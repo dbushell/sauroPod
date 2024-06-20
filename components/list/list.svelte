@@ -2,19 +2,19 @@
   export let empty = '';
 </script>
 
-<div class="List">
+<ul class="List">
   {#if empty}
-    <p>{empty}</p>
+    <li><p>{empty}</p></li>
   {/if}
   <slot />
-</div>
+</ul>
 
 <style>
   .List {
     margin-inline: calc(-0.5 * var(--grid-column-gap));
   }
 
-  p:not(:only-child) {
+  li:not(:only-child) {
     display: none;
   }
 </style>

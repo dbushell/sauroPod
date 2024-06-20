@@ -61,7 +61,9 @@
   </h1>
   <List empty="No episodes found">
     {#each episodes as episode (episode.id)}
-      <ListEpisode {episode} {podcast} bookmark={findBookmark(episode.id)} />
+      <li>
+        <ListEpisode {episode} {podcast} bookmark={findBookmark(episode.id)} />
+      </li>
     {/each}
   </List>
   {#if hasPrev || hasNext}

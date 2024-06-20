@@ -38,18 +38,22 @@
     <span>{albums[0].title}</span>
   </h1>
   <List empty="No audiobooks found">
-    <a class="flex gap-xs jc-between ai-start" href={`/audiobooks/${artists[0].id}/`} data-get>
-      <span class="p color-subtle">Return</span>
-    </a>
+    <li>
+      <a class="flex gap-xs jc-between ai-start" href={`/audiobooks/${artists[0].id}/`} data-get>
+        <span class="p color-subtle">Return</span>
+      </a>
+    </li>
     {#each songs as song (song.id)}
-      <button
-        type="button"
-        class="flex gap-xs jc-between ai-start"
-        data-play="/songs/{song.artistId}/{song.albumId}/{song.id}/"
-      >
-        <span class="p">{song.title}</span>
-        <span class="color-subtle small monospace">{formatTime(song.duration)}</span>
-      </button>
+      <li>
+        <button
+          type="button"
+          class="flex gap-xs jc-between ai-start Anchor"
+          data-play="/songs/{song.artistId}/{song.albumId}/{song.id}/"
+        >
+          <span class="p">{song.title}</span>
+          <span class="color-subtle small monospace">{formatTime(song.duration)}</span>
+        </button>
+      </li>
     {/each}
   </List>
 </Layout>

@@ -1,3 +1,5 @@
+#!/usr/bin/env -S deno run --no-lock --unstable-kv --unstable-cron --allow-all mod.ts
+
 import type {Data} from '@src/types.ts';
 import * as log from 'log';
 import {DinoSsr} from 'dinossr';
