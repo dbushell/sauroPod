@@ -4,11 +4,11 @@
  */
 import type {Artist, Album, Song} from '@src/types.ts';
 import type {Bookmark, Episode, Podcast} from '@src/types.ts';
-import {uuidPattern} from './mod.ts';
+import {v4} from 'uuid';
 
 /** Validate a possible UUID value */
 export const isUUID = (value: string): boolean => {
-  return uuidPattern().test(value);
+  return v4.validate(value);
 };
 
 /** Validate a possible URL value */

@@ -61,9 +61,10 @@ const callback = async (podcast: Podcast): Promise<void> => {
     return;
   }
 
-  // Sort reverse chronological before assigning UUID because some feeds are random
-  newEpisodes.sort((a, b) => a.date.getTime() - b.date.getTime());
+  // Assign UUIDs to all episodes
   newEpisodes.forEach((e) => (e.id = kv.uuid()));
+  // Sort reverse chronological because some feeds are random
+  newEpisodes.sort((a, b) => a.date.getTime() - b.date.getTime());
 
   const episodeIds = new Set<string>();
   const oldEpisodes = await kv.getEpisodes(podcast.id);
@@ -103,6 +104,7 @@ const callback = async (podcast: Podcast): Promise<void> => {
   // Update modified date for Podcast
   if (newEpisodes.length) {
     podcast.count = newEpisodes.length;
+    podcast.latestId = newEpisodes.at(-1)!.id;
     const modified = newEpisodes.at(-1)!.date;
     if (modified.getTime() > podcast.modified.getTime()) {
       podcast.modified = modified;

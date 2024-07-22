@@ -2,7 +2,7 @@
   import type {DinoLoad} from 'dinossr';
   import type {APIData, Data, PublicData, ServerData} from '@src/types.ts';
 
-  const id = '[a-f\\d]{8}-[a-f\\d]{4}-7[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
+  const id = '[a-f\\d]{8}-[a-f\\d]{4}-4[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
   export const pattern = `/:id(${id})/:page(\\d+)?/`;
 
   export const load: DinoLoad<Data> = async ({fetch, params, publicData, serverData}) => {

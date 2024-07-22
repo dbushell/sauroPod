@@ -2,7 +2,7 @@ import type {DinoHandle} from 'dinossr';
 import type {APIData, Song} from '@src/types.ts';
 import * as kv from '@src/kv/mod.ts';
 
-const id = '[a-f\\d]{8}-[a-f\\d]{4}-7[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
+const id = '[a-f\\d]{8}-[a-f\\d]{4}-4[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
 export const pattern = `/:artistId(${id})/:albumId(${id})/:songId(${id})?/`;
 
 // Get all or single Song(s) by Album and Artist ID

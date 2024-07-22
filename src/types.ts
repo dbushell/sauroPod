@@ -27,6 +27,7 @@ export type Podcast = {
   image: string;
   /** Total number of episodes */
   count: number;
+  latestId: string;
 };
 
 export type Artist = {

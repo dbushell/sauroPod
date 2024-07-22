@@ -12,6 +12,21 @@
 <style>
   .List {
     margin-inline: calc(-0.5 * var(--grid-column-gap));
+
+    & li {
+      display: contents;
+
+      &:not(:has(*)) {
+        display: none;
+      }
+
+      & > * {
+        border: inherit;
+        inline-size: inherit;
+        min-inline-size: inherit;
+        padding: inherit;
+      }
+    }
   }
 
   li:not(:only-child) {

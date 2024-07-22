@@ -2,7 +2,7 @@ import type {DinoHandle} from 'dinossr';
 import type {APIData} from '@src/types.ts';
 import * as kv from '@src/kv/mod.ts';
 
-const id = '[a-f\\d]{8}-[a-f\\d]{4}-7[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
+const id = '[a-f\\d]{8}-[a-f\\d]{4}-4[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
 export const pattern = `/:id(${id})/`;
 
 // Get single Episode by ID with Bookmark and Podcast

@@ -4,23 +4,13 @@
  */
 import type {Episode} from '@src/types.ts';
 import {db, isEpisode, isUUID} from './mod.ts';
+import {newestSort} from '@src/shared/mod.ts';
+import {getPodcast} from '@src/kv/podcast.ts';
 
-/** Return all Episodes (pagination optional) */
-export const getEpisodesByPage = async (
-  podcastId: string,
-  limit?: number,
-  page = 0
-): Promise<Array<Episode>> => {
+/** Return all Episodes */
+export const getEpisodes = async (podcastId: string): Promise<Array<Episode>> => {
   if (!isUUID(podcastId)) throw new Error('Invalid UUID');
-  let list: Deno.KvListIterator<string>;
-  let cursor: string | undefined;
-  let currentPage = 0;
-  // Fast forward to requested page
-  while (true) {
-    list = db.list<string>({prefix: ['episode', podcastId]}, {cursor, limit, reverse: true});
-    if (currentPage++ >= page) break;
-    while (!(await list.next()).done) cursor = list.cursor;
-  }
+  const list = db.list<string>({prefix: ['episode', podcastId]});
   const episodes: Array<Episode> = [];
   for await (const entry of list) {
     const key = entry.key.at(-1) as string;
@@ -28,21 +18,27 @@ export const getEpisodesByPage = async (
     const episode = await getEpisode(key);
     if (episode) episodes.push(episode);
   }
+  newestSort<Episode>(episodes, 'date');
   return episodes;
 };
 
-/** Return all Episodes */
-export const getEpisodes = (podcastId: string, limit?: number): Promise<Array<Episode>> => {
-  return getEpisodesByPage(podcastId, limit);
+/** Return all Episodes (pagination optional) */
+export const getEpisodesByPage = async (
+  podcastId: string,
+  limit?: number,
+  page = 0
+): Promise<Array<Episode>> => {
+  const episodes = await getEpisodes(podcastId);
+  if (!limit || !episodes.length) return episodes;
+  const start = Math.abs(page * limit);
+  if (start >= episodes.length) return [];
+  return episodes.slice(start, start + limit);
 };
 
 /** Return most recent Episode */
 export const getLatestEpisode = async (podcastId: string): Promise<Episode | null> => {
-  if (!isUUID(podcastId)) throw new Error('Invalid UUID');
-  const list = db.list<string>({prefix: ['episode', podcastId]}, {limit: 1, reverse: true});
-  const value = (await list.next()).value;
-  if (!value) return null;
-  return getEpisode(value.key.at(-1) as string);
+  const podcast = await getPodcast(podcastId);
+  return podcast?.latestId ? getEpisode(podcast.latestId) : null;
 };
 
 /** Return Episode by ID */

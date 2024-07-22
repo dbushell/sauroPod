@@ -26,8 +26,8 @@ services:
 
   deno:
     container_name: sauropod_deno
-    image: denoland/deno:1.43.0
-    command: deno run --no-lock --unstable-kv --unstable-cron --allow-all /app/mod.ts
+    image: denoland/deno:1.45.2
+    command: deno run --no-lock --unstable-kv --unstable-cron --allow-all /app/mod.ts --dev --cron --sync
     restart: unless-stopped
     depends_on:
       - denokv

@@ -1,10 +1,14 @@
 {
+  "tasks": {
+    "dev": "deno run --no-lock --unstable-kv --unstable-cron --allow-all mod.ts --dev"
+  },
   "imports": {
     "@src/": "./src/",
-    "fs": "jsr:@std/fs@0.224",
+    "fs": "jsr:@std/fs@0.229",
     "log": "jsr:@std/log@0.224",
-    "html": "jsr:@std/html@0.224",
-    "path": "jsr:@std/path@0.224",
+    "html": "jsr:@std/html@1.0",
+    "path": "jsr:@std/path@1.0",
+    "uuid": "jsr:@std/uuid@1.0",
     "file-server": "jsr:@std/http@0.224/file-server",
     "dinossr": "jsr:@ssr/dinossr@0.31",
     "diplodocache": "jsr:@ssr/diplodocache@0.4.1",
