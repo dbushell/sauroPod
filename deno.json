@@ -1,6 +1,11 @@
 {
+  "name": "@dbushell/sauropod",
+  "version": "0.30.0",
   "tasks": {
     "dev": "deno run --no-lock --unstable-kv --unstable-cron --allow-all mod.ts --dev"
+  },
+  "exports": {
+    ".": "./mod.ts"
   },
   "imports": {
     "@src/": "./src/",
@@ -9,12 +14,12 @@
     "html": "jsr:@std/html@1.0",
     "path": "jsr:@std/path@1.0",
     "uuid": "jsr:@std/uuid@1.0",
+    "media-types": "jsr:@std/media-types@1.0",
     "file-server": "jsr:@std/http@0.224/file-server",
+    "carriageway": "jsr:@dbushell/carriageway@1.0",
+    "xml-streamify": "jsr:@dbushell/xml-streamify@0.6",
+    "audio-duration": "jsr:@dbushell/audio-duration@0.6",
     "dinossr": "jsr:@ssr/dinossr@0.31",
-    "diplodocache": "jsr:@ssr/diplodocache@0.4.1",
-    "carriageway": "jsr:@dbushell/carriageway@0.12",
-    "xml-streamify": "jsr:@dbushell/xml-streamify@0.4",
-    "audio-duration": "jsr:@dbushell/audio-duration@0.5",
     "svelte": "npm:svelte@4.2.15/compiler"
   }
 }

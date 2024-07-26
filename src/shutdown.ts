@@ -3,7 +3,7 @@
  * @module
  */
 import * as log from 'log';
-import {cache} from '@src/cache.ts';
+import * as cache from '@src/cache.ts';
 
 const unload = Promise.withResolvers<void>();
 let activated = false;

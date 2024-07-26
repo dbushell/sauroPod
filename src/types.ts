@@ -95,3 +95,14 @@ export type Data = {
   publicData: PublicData;
   serverData: ServerData;
 };
+
+export type FetchItem = {
+  controller: AbortController;
+  hash: string;
+  options: {
+    maxAge?: number;
+    media?: 'audio' | 'image' | 'json' | 'rss';
+    prefetch?: boolean;
+  };
+  url: URL;
+};

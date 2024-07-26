@@ -2,7 +2,7 @@ import type {DinoHandle} from 'dinossr';
 import type {Song} from '@src/types.ts';
 import {serveFile} from 'file-server';
 import * as kv from '@src/kv/mod.ts';
-import {cache, defaults} from '@src/cache.ts';
+import * as cache from '@src/cache.ts';
 
 const id = '[a-f\\d]{8}-[a-f\\d]{4}-4[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
 export const pattern = `/:id(${id})+/`;
@@ -25,11 +25,14 @@ export const GET: DinoHandle = async ({request, match}): Promise<Response> => {
     // Serve audio by Episode ID
     const episode = await kv.getEpisode(ids.at(-1)!);
     if (!episode) return error;
-    const response = await cache.fetch(episode.url, request, {
-      ...structuredClone(defaults.audio)
+    const response = await cache.fetch(new URL(episode.url), request, {
+      media: 'audio'
     });
     // WebKit does not like this content type
-    if (response.headers.get('content-type') === 'binary/octet-stream') {
+    if (
+      !response.headers.has('content-type') ||
+      response.headers.get('content-type') === 'binary/octet-stream'
+    ) {
       response.headers.set('content-type', 'audio/mpeg');
     }
     return response;

@@ -1,9 +1,9 @@
-#!/usr/bin/env -S deno run --no-lock --unstable-kv --unstable-cron --allow-all mod.ts --dev
+#!/usr/bin/env -S deno run --no-lock --unstable-kv --unstable-cron --allow-all --watch mod.ts --dev
 
 import type {Data} from '@src/types.ts';
 import * as log from 'log';
 import {DinoSsr} from 'dinossr';
-import {cache} from '@src/cache.ts';
+import * as cache from '@src/cache.ts';
 import * as sync from '@src/sync/mod.ts';
 import '@src/log.ts';
 import '@src/events.ts';
