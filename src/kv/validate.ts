@@ -4,11 +4,15 @@
  */
 import type {Artist, Album, Song} from '@src/types.ts';
 import type {Bookmark, Episode, Podcast} from '@src/types.ts';
-import {v4} from 'uuid';
 
-/** Validate a possible UUID value */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/**
+ * Validate a possible UUID value
+ * @see {@link https://jsr.io/@std/uuid/1.0.0/v4.ts}
+ */
 export const isUUID = (value: string): boolean => {
-  return v4.validate(value);
+  return UUID_RE.test(value);
 };
 
 /** Validate a possible URL value */

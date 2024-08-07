@@ -4,9 +4,9 @@
  */
 import type {ArtistEntry, AlbumEntry, SongEntry} from '@src/types.ts';
 import type {Artist, Album, Song} from '@src/types.ts';
-import * as log from 'log';
-import * as path from 'path';
-import {duration as audioDuration} from 'audio-duration';
+import {log} from '@src/log.ts';
+import * as path from '@std/path';
+import {duration as audioDuration} from '@dbushell/audio-duration';
 import * as db from '@src/kv/mod.ts';
 
 /** File extensions to consider as audio when syncing media */
@@ -137,6 +137,7 @@ export const ensureSong = async (entry: SongEntry, songs: Song[], artist: Artist
 
 export const syncMedia = async () => {
   if (!checkMediaPath()) return;
+  const now = performance.now();
   const artists = await db.getArtists();
   const media = await mapMedia(mediaPath);
   for (const entry of media) {
@@ -182,4 +183,5 @@ export const syncMedia = async () => {
       await db.deleteMedia<Song>('song', song.artistId, song.albumId, song.id);
     }
   }
+  log.info(`Media sync in ${((performance.now() - now) / 1000).toFixed(2)}s`);
 };

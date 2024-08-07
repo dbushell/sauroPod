@@ -1,4 +1,4 @@
-import type {DinoHandle} from 'dinossr';
+import type {DinoHandle} from '@ssr/dinossr';
 import type {APIData} from '@src/types.ts';
 import * as kv from '@src/kv/mod.ts';
 

@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import type {DinoLoad} from 'dinossr';
+  import type {DinoLoad} from '@ssr/dinossr';
   import type {APIData, Data, ServerData} from '@src/types.ts';
 
   export const pattern = '/';

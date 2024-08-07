@@ -2,8 +2,9 @@
  * Handle graceful shutdown.
  * @module
  */
-import * as log from 'log';
-import * as cache from '@src/cache.ts';
+import * as log from '@std/log';
+import * as cache from '@src/cache/mod.ts';
+import * as sync from '@src/sync/mod.ts';
 
 const unload = Promise.withResolvers<void>();
 let activated = false;
@@ -11,6 +12,7 @@ let activated = false;
 const beforeUnload = async () => {
   log.critical('💀 Shutdown activated');
   await cache.close();
+  sync.close();
   log.getLogger().handlers.forEach((handler) => {
     if (handler instanceof log.FileHandler) {
       handler.flush();

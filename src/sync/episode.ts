@@ -3,12 +3,12 @@
  * @module
  */
 import type {Episode, Podcast} from '@src/types.ts';
-import {Queue} from 'carriageway';
-import * as log from 'log';
-import * as html from 'html';
-import * as xml from 'xml-streamify';
+import {Queue} from '@dbushell/carriageway';
+import {log} from '@src/log.ts';
+import * as html from '@std/html';
+import * as xml from '@dbushell/xml-streamify';
 import * as kv from '@src/kv/mod.ts';
-import {encodeHash} from '@src/vendor/murmurhash/mod.ts';
+import {encodeHash} from '@src/utils.ts';
 
 const queue = new Queue<Podcast, void>({
   concurrency: 5
@@ -52,7 +52,9 @@ const callback = async (podcast: Podcast): Promise<void> => {
     // Add GUID if specified to help matching later
     let guid = node.first('guid')?.innerText.trim() ?? '';
     guid = guid.replace(/^<!\[CDATA\[(.*)]]>$/, '$1');
-    if (guid) newEp.guid = encodeHash(guid);
+    if (guid) {
+      newEp.guid = await encodeHash(guid);
+    }
     newEpisodes.push(newEp);
   }
   clearTimeout(timeout);

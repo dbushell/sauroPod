@@ -1,4 +1,4 @@
-import type {DinoHandle} from 'dinossr';
+import type {DinoHandle} from '@ssr/dinossr';
 
 export const pattern = '.js';
 

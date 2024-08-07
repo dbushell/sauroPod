@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import type {DinoLoad} from 'dinossr';
+  import type {DinoLoad} from '@ssr/dinossr';
   import type {APIData, Data, PublicData, ServerData} from '@src/types.ts';
 
   const id = '[a-f\\d]{8}-[a-f\\d]{4}-4[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';

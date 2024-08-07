@@ -1,11 +1,11 @@
-#!/usr/bin/env -S deno run --no-lock --unstable-kv --unstable-cron --allow-all --watch mod.ts --dev
+#!/usr/bin/env -S deno run --no-lock --unstable-kv --unstable-cron --allow-all mod.ts --dev
 
 import type {Data} from '@src/types.ts';
-import * as log from 'log';
-import {DinoSsr} from 'dinossr';
-import * as cache from '@src/cache.ts';
-import * as sync from '@src/sync/mod.ts';
-import '@src/log.ts';
+import {DinoSsr, type DinoRouter} from '@ssr/dinossr';
+import * as cache from '@src/cache/mod.ts';
+import {syncMedia} from '@src/sync/media.ts';
+import {syncPodcasts} from '@src/sync/mod.ts';
+import {log} from '@src/log.ts';
 import '@src/events.ts';
 import '@src/shutdown.ts';
 
@@ -16,44 +16,41 @@ if (import.meta.main) {
 
   await dinossr.init();
 
-  dinossr.router.onError = (error, request) => {
+  const router: DinoRouter<Data> = dinossr.router;
+
+  router.onError = (error, request) => {
     log.error(request.url);
     log.error(error);
     return new Response(null, {status: 500});
   };
 
-  dinossr.router.use(({request, platform}) => {
+  router.use(({request, platform}) => {
     log.debug(`[${request.method}] ${request.url}`);
     platform.publicData.app = 'sauroPod';
     platform.publicData.version = platform.deployHash;
     platform.serverData.fragment = request.headers.has('x-fragment');
   });
 
-  const syncNow = async () => {
-    const now = performance.now();
-    await sync.syncPodcasts();
-    await sync.syncAllEpisodes();
-    log.info(`Podcast sync in ${((performance.now() - now) / 1000).toFixed(2)}s`);
-  };
-
-  // Start cron tasks
   if (Deno.args.includes('--cron')) {
-    Deno.cron('podcast sync', '*/15 * * * *', {}, syncNow);
-    Deno.cron('media sync', '0 * * * *', {}, async () => {
-      const now = performance.now();
-      await sync.syncMedia();
-      log.info(`Media sync in ${((performance.now() - now) / 1000).toFixed(2)}s`);
+    // Every 15 minutes
+    Deno.cron('podcast sync', '*/15 * * * *', {}, async () => {
+      await syncPodcasts();
     });
+    // Every hour
+    Deno.cron('media sync', '0 * * * *', {}, async () => {
+      await syncMedia();
+    });
+    // Every day
     Deno.cron('cache clean', '0 0 * * *', {}, async () => {
       await cache.clean();
     });
   }
 
-  // Sync podcasts if not due in five minutes
   if (Deno.args.includes('--sync')) {
-    if (new Date().getMinutes() % 15 < 10) {
-      await syncNow();
-    }
-    sync.syncMedia();
+    setTimeout(() => {
+      syncPodcasts().finally(() => {
+        syncMedia();
+      });
+    }, 5000);
   }
 }

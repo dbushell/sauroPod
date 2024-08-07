@@ -2,10 +2,10 @@
  * Handle global event listeners.
  * @module
  */
-import type {Bookmark, Episode, Podcast, Song} from '@src/types.ts';
-import * as log from 'log';
+import type {Album, Artist, Bookmark, Episode, Podcast, Song} from '@src/types.ts';
+import {log} from '@src/log.ts';
 import * as kv from '@src/kv/mod.ts';
-import * as cache from '@src/cache.ts';
+import * as cache from '@src/cache/mod.ts';
 
 addEventListener('podcast:sync', (async (event: CustomEvent<Podcast>) => {
   const podcast = event.detail;
@@ -52,6 +52,24 @@ addEventListener('episode:delete', (async (event: CustomEvent<Episode>) => {
   const bookmark = await kv.getBookmark(episode.podcastId, episode.id);
   if (!bookmark) return;
   await kv.deleteBookmark(bookmark);
+}) as unknown as EventListener);
+
+addEventListener('artist:delete', (async (event: CustomEvent<Artist>) => {
+  const artist = event.detail;
+  log.debug(`Delete artist: "${artist.title}"`);
+  // Delete albums
+  for (const album of await kv.getAlbums(artist)) {
+    kv.deleteMedia('album', album.artistId, album.id);
+  }
+}) as unknown as EventListener);
+
+addEventListener('album:delete', (async (event: CustomEvent<Album>) => {
+  const album = event.detail;
+  log.debug(`Delete album: "${album.title}"`);
+  // Delete songs
+  for (const song of await kv.getSongs(album)) {
+    kv.deleteMedia('song', song.artistId, song.albumId, song.id);
+  }
 }) as unknown as EventListener);
 
 addEventListener('song:delete', (async (event: CustomEvent<Song>) => {

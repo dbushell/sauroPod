@@ -1,4 +1,4 @@
-import type {DinoHandle} from 'dinossr';
+import type {DinoHandle} from '@ssr/dinossr';
 import type {APIData} from '@src/types.ts';
 import * as kv from '@src/kv/mod.ts';
 
@@ -91,11 +91,19 @@ export const PUT: DinoHandle = async ({request}): Promise<Response> => {
   if (!result) return error;
   // Update Episode played status
   const episode = await kv.getEpisode(data.ids[1]);
-  if (episode) {
+  if (episode && !episode.played) {
     await kv.setEpisode({
       ...episode,
       played: data.position > episode.duration * 0.1
     });
+    // Bust cache
+    const podcast = await kv.getPodcast(data.ids[0]);
+    if (podcast) {
+      await kv.setPodcast({
+        ...podcast,
+        apiCache: new Date()
+      });
+    }
   }
   return Response.json(null, {status: 201});
 };

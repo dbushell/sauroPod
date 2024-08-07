@@ -3,7 +3,6 @@
 # APP_MEDIA_PATH - directory path
 # APP_CACHE_PATH - directory path
 # APP_DATA_PATH - directory path
-# APP_LOG_PATH - directory path
 
 networks:
   frontend:
@@ -26,7 +25,7 @@ services:
 
   deno:
     container_name: sauropod_deno
-    image: denoland/deno:1.45.3
+    image: denoland/deno:1.45.5
     command: deno run --no-lock --unstable-kv --unstable-cron --allow-all /app/mod.ts --dev --cron --sync
     restart: unless-stopped
     depends_on:
@@ -36,12 +35,10 @@ services:
       DENO_KV_ACCESS_TOKEN: ${DENO_KV_ACCESS_TOKEN}
       APP_MEDIA_PATH: /mnt/media
       APP_CACHE_PATH: /mnt/cache
-      APP_LOG_PATH: /mnt/log
       APP_LOG_LEVEL: ${APP_LOG_LEVEL}
     volumes:
       - ${APP_MEDIA_PATH}:/mnt/media:ro
       - ${APP_CACHE_PATH}:/mnt/cache
-      - ${APP_LOG_PATH}:/mnt/log
       - ./components:/app/components:ro
       - ./routes:/app/routes:ro
       - ./src:/app/src:ro

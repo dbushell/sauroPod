@@ -3,9 +3,9 @@
  * @module
  */
 import type {Podcast} from '@src/types.ts';
-import {Queue} from 'carriageway';
-import * as html from 'html';
-import * as xml from 'xml-streamify';
+import {Queue} from '@dbushell/carriageway';
+import * as html from '@std/html';
+import * as xml from '@dbushell/xml-streamify';
 import * as kv from '@src/kv/mod.ts';
 
 const queue = new Queue<URL, Podcast>({
@@ -78,7 +78,7 @@ export const syncFeed = async (url: URL): Promise<Podcast> => {
   return podcast;
 };
 
-export const syncPodcasts = async (): Promise<void> => {
+export const syncAllPodcasts = async (): Promise<void> => {
   const tasks: Array<Promise<Podcast>> = [];
   for (const podcast of await kv.getPodcasts()) {
     tasks.push(syncFeed(new URL(podcast.url)));

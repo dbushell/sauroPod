@@ -1,8 +1,11 @@
-import type {DinoHandle} from 'dinossr';
+import type {DinoHandle} from '@ssr/dinossr';
 import type {APIData} from '@src/types.ts';
 import * as kv from '@src/kv/mod.ts';
-import * as sync from '@src/sync/mod.ts';
+import * as cache from '@src/cache/mod.ts';
+import {syncEpisodes} from '@src/sync/episode.ts';
+import {syncFeed} from '@src/sync/podcast.ts';
 import {redirect} from '@src/shared/mod.ts';
+import {encodeHash} from '@src/utils.ts';
 
 const id = '[a-f\\d]{8}-[a-f\\d]{4}-4[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
 export const pattern = `/:id(${id})?/:page(\\d+)?/`;
@@ -16,11 +19,28 @@ export const GET: DinoHandle = async ({match}): Promise<Response> => {
   if (id) {
     const podcast = await kv.getPodcast(id);
     if (!podcast) return error;
-    let index = Number.parseInt(page || '1');
-    if (index < 2) index = 1;
-    const episodes = await kv.getEpisodesByPage(id, 100, index - 1);
-    const data: APIData = {podcasts: [{...podcast, episodes}]};
-    return Response.json(data);
+    const hash = await encodeHash(id + page + podcast?.latestId + podcast?.apiCache);
+
+    // `getEpisodesByPage` is slow use cache
+    let rawJson = await cache.pull(hash);
+    if (!rawJson) {
+      let index = Number.parseInt(page || '1');
+      if (index < 2) index = 1;
+      const episodes = await kv.getEpisodesByPage(id, 100, index - 1);
+      const data: APIData = {podcasts: [{...podcast, episodes}]};
+      rawJson = new TextEncoder().encode(JSON.stringify(data));
+      await cache.push(rawJson, {
+        hash,
+        contentType: 'application/json',
+        maxAge: 1000 * 60 * 60 * 24 * 30
+      });
+    }
+    return new Response(rawJson, {
+      status: 200,
+      headers: {
+        'content-type': 'application/json'
+      }
+    });
   }
   // Get all Podcasts with latest Episode
   const podcasts = await kv.getPodcasts();
@@ -60,8 +80,8 @@ export const PUT: DinoHandle = async ({request}): Promise<Response> => {
   }
   // Sync new Podcast feed
   try {
-    const podcast = await sync.syncFeed(new URL(url));
-    sync.syncEpisodes(podcast);
+    const podcast = await syncFeed(new URL(url));
+    await syncEpisodes(podcast);
     return redirect(`/podcasts/${podcast.id}/`);
   } catch {
     return error;

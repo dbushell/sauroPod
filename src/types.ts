@@ -28,6 +28,8 @@ export type Podcast = {
   /** Total number of episodes */
   count: number;
   latestId: string;
+  /** Update to bust cache */
+  apiCache: Date;
 };
 
 export type Artist = {
@@ -96,13 +98,14 @@ export type Data = {
   serverData: ServerData;
 };
 
-export type FetchItem = {
-  controller: AbortController;
+export type CacheOptions = {
+  maxAge?: number;
+  media?: 'audio' | 'image' | 'json' | 'rss';
+  prefetch?: boolean;
+};
+
+export type CacheItem = {
   hash: string;
-  options: {
-    maxAge?: number;
-    media?: 'audio' | 'image' | 'json' | 'rss';
-    prefetch?: boolean;
-  };
-  url: URL;
+  options: CacheOptions;
+  url: string;
 };

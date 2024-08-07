@@ -1,6 +1,6 @@
-import type {DinoHandle} from 'dinossr';
+import type {DinoHandle} from '@ssr/dinossr';
 import * as kv from '@src/kv/mod.ts';
-import * as cache from '@src/cache.ts';
+import * as cache from '@src/cache/mod.ts';
 
 const id = '[a-f\\d]{8}-[a-f\\d]{4}-4[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
 export const pattern = `/:id(${id})/`;
