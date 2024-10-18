@@ -1,0 +1,37 @@
+<script context="module">
+  import {formatDate, formatTime} from "@src/utils/format.ts";
+
+  const id = '[a-f\\d]{8}-[a-f\\d]{4}-4[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
+  export const pattern = `/:id(${id})/`;
+
+  export const load = async ({fetch, params, platformProps}) => {
+    const response = await fetch(`/api/episodes/${params.id}/`);
+    if (!response.ok) {
+      return new Response(null, {status: 404});
+    }
+    const data = await response.json();
+    data.episodes.forEach((episode) => {
+      episode.dateFormat = formatDate(new Date(episode.date));
+      episode.durationFormat = formatTime(episode.duration);
+    });
+    platformProps.episodes = data.episodes;
+    platformProps.podcasts = [data.episodes[0].podcast];
+    platformProps.bookmarks = [data.episodes[0].bookmark];
+    platformProps.title = `${data.episodes[0].title} - ${data.episodes[0].podcast.title}`;
+  };
+</script>
+
+<pod-layout title="{{title}}" playId="/episodes/{{episodes[0].id}}/">
+  <h1>
+    <a href="/podcasts/{{podcasts[0].id}}/">
+      <span>{{podcasts[0].title}}</span>
+    </a>
+  </h1>
+  <sauropod-episodes>
+    <pod-list>
+      <li>
+        <list-episode episode="{{episodes[0]}}" podcast="{{podcasts[0]}}" bookmark="{{bookmarks[0]}}" />
+      </li>
+    </pod-list>
+  </sauropod-episodes>
+</pod-layout>

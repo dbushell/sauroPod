@@ -2,10 +2,11 @@
  * Data validation module.
  * @module
  */
-import type {Artist, Album, Song} from '@src/types.ts';
-import type {Bookmark, Episode, Podcast} from '@src/types.ts';
+import type { Album, Artist, Song } from "@src/types.ts";
+import type { Bookmark, Episode, Podcast } from "@src/types.ts";
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 /**
  * Validate a possible UUID value
@@ -23,7 +24,7 @@ export const isURL = (value: string | URL, strict = true): boolean => {
     }
     const url = new URL(value);
     // Only work with HTTP
-    if (url.protocol.startsWith('http')) {
+    if (url.protocol.startsWith("http")) {
       return true;
     }
   } catch {

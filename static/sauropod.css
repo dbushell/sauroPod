@@ -1,0 +1,271 @@
+@font-face {
+  font-family: "RedditMono";
+  src: url("/fonts/RedditMono-Light.woff2?v=%DEPLOY_HASH%") format("woff2");
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+  /* Hyphen, numbers, and colon */
+  unicode-range: U+002D, U+0030-003A;
+}
+
+:root {
+  --color-orange: 80% 0.16 78;
+  --color-red: 60% 0.2 18;
+  --font-display: "Sora", sans-serif;
+  --font-sans: "Sora", sans-serif;
+  --font-monospace: "RedditMono", monospace;
+
+  &.navigating * {
+    cursor: wait;
+  }
+}
+
+* {
+  touch-action: manipulation;
+}
+
+:is(
+  sauropod-bookmarks,
+  sauropod-episodes,
+  sauropod-header,
+) {
+  display: contents;
+}
+
+[data-contents] {
+  display: contents;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+img:where([src*="/artwork/"]) {
+  --size: calc(2 * var(--font-size) * var(--line-height));
+  block-size: var(--size);
+  border-radius: calc(5 / 16 * 1rem);
+  inline-size: var(--size);
+  overflow: clip;
+}
+
+[data-stop]:disabled {
+  display: none;
+}
+
+h1 {
+  --font-size: var(--step-3);
+  color: oklch(var(--color-anchor));
+
+  & a {
+    text-decoration: none;
+  }
+}
+
+.p {
+  line-height: inherit;
+}
+
+.color-warn {
+  color: oklch(var(--color-red));
+}
+
+.color-success {
+  color: oklch(var(--color-green));
+}
+
+.color-active {
+  color: oklch(var(--color-secondary));
+}
+
+.Button--warn {
+  --color-primary: var(--color-red);
+  --color-secondary: var(--color-red);
+}
+
+.Progress {
+  --size: calc(2 / 16 * 1rem);
+}
+
+.Icon {
+  aspect-ratio: 1 / 1;
+  fill: currentColor;
+}
+
+:where(:not(.Button)) > .Icon {
+  --size: calc(var(--font-size) * var(--line-height));
+  display: inline-block;
+  block-size: var(--size);
+  inline-size: var(--size);
+  transform: scale(0.75);
+  vertical-align: top;
+
+  &[src] {
+    transform: none;
+  }
+}
+
+.List {
+  margin-inline: calc(-0.5 * var(--grid-column-gap));
+
+  & li {
+    display: contents;
+
+    &:not(:has(*)) {
+      display: none;
+    }
+
+    &:first-child:not(:only-child) {
+      display: none;
+    }
+
+    & > * {
+      border: inherit;
+      inline-size: inherit;
+      min-inline-size: inherit;
+      padding: inherit;
+    }
+  }
+
+  & progress[value="0"] {
+    display: none;
+  }
+}
+
+.Button--skip {
+  & span {
+    pointer-events: none;
+    user-select: none;
+
+    &:not(.hidden) {
+      font-size: calc(8 / 16 * 1rem);
+      font-family: var(--font-monospace);
+      font-weight: 400;
+      inset-block-start: 50%;
+      inset-inline-start: 50%;
+      line-height: 1;
+      position: absolute;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+.Container {
+  & :is(aside, main) {
+    grid-column: inner-start / inner-end;
+  }
+}
+
+sauropod-player {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+
+  & [data-action="pause"]:disabled {
+    display: none;
+  }
+
+  &:not(:has([data-action="pause"]:disabled)) {
+    & [data-action="play"]:disabled {
+      display: none;
+    }
+  }
+
+  & [role="tooltip"] {
+    --offset: calc(
+      (100% - var(--space-m)) / var(--range-max) * var(--range-value)
+    );
+
+    color: oklch(var(--color-bg-default));
+    display: block;
+    background: oklch(var(--color-primary));
+    background-image: linear-gradient(
+      45deg,
+      oklch(var(--color-secondary)),
+      oklch(var(--color-primary))
+    );
+    border-radius: calc(8 / 16 * 1rem);
+    font-size: var(--step-0);
+    font-weight: 700;
+    inset-block-end: calc(100% + var(--space-2xs));
+    inset-inline-start: var(--offset);
+    line-height: 1;
+    padding: var(--space-3xs) var(--space-2xs);
+    position: absolute;
+    text-transform: uppercase;
+    transform: translateX(calc(-50% + var(--space-m) / 2));
+    z-index: 99;
+  }
+
+  & .Progress {
+    --size: var(--space-m);
+    margin-block-end: calc(-1 * var(--size));
+  }
+
+  & .Range {
+    --color-bg-lighter: 0% 0 0 / 0;
+  }
+
+  & .Seek {
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  & .Button-group {
+    flex-grow: 1;
+    flex-wrap: nowrap;
+    margin: 0;
+
+    & .Button {
+      --icon-scale: 1.3;
+      flex-grow: 1;
+      min-inline-size: var(--button-height);
+      max-inline-size: calc(160 / 16 * 1rem);
+      padding-inline: 0;
+      position: relative;
+    }
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+sauropod-player {
+  view-transition-name: player;
+}
+
+sauropod-main {
+  view-transition-name: main;
+}
+
+::view-transition-group(player) {
+  z-index: 1000;
+}
+
+::view-transition-group(main) {
+  z-index: 100;
+}
+
+::view-transition-new(main) {
+  animation: 300ms fade-in;
+  animation-fill-mode: forwards;
+  transform-origin: 50% 0;
+}
+
+::view-transition-old(main) {
+  animation: 150ms fade-out;
+  animation-fill-mode: forwards;
+  transform-origin: 50% 0;
+}
+

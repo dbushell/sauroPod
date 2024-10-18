@@ -25,7 +25,7 @@ services:
 
   deno:
     container_name: sauropod_deno
-    image: denoland/deno:1.45.5
+    image: denoland/deno:2.0.0
     command: deno run --no-lock --unstable-kv --unstable-cron --allow-all /app/mod.ts --dev --cron --sync
     restart: unless-stopped
     depends_on:
@@ -44,7 +44,7 @@ services:
       - ./src:/app/src:ro
       - ./static:/app/static:ro
       - ./app.html:/app/app.html:ro
-      - ./deno.json:/app/deno.json:ro
+      - ./deno.jsonc:/app/deno.jsonc:ro
       - ./mod.ts:/app/mod.ts:ro
     networks:
       - frontend

@@ -1,0 +1,16 @@
+<a class="flex gap-xs ai-center" href="/podcasts/{{podcast.id}}/">
+  <img alt="{{podcast.title}}" src="/api/artwork/{{podcast.id}}/" class="flex-shrink-0" decoding="async" fetchpriority="low" loading="lazy" />
+  <span class="flex-grow-1">
+    <span class="block p">
+      {{podcast.title}}
+    </span>
+    <div class="flex jc-between ai-start">
+      <time class="color-subtle small" datetime="{{podcast.modified}}">
+        {{podcast.modifiedFormat}}
+      </time>
+      <span class="color-subtle small monospace">
+        {{podcast.count ?? 0}}
+      </span>
+    </div>
+  </span>
+</a>

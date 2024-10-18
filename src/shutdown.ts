@@ -2,15 +2,15 @@
  * Handle graceful shutdown.
  * @module
  */
-import * as log from '@std/log';
-import * as cache from '@src/cache/mod.ts';
-import * as sync from '@src/sync/mod.ts';
+import * as log from "@std/log";
+import * as cache from "@src/cache/mod.ts";
+import * as sync from "@src/sync/mod.ts";
 
 const unload = Promise.withResolvers<void>();
 let activated = false;
 
 const beforeUnload = async () => {
-  log.critical('💀 Shutdown activated');
+  log.critical("💀 Shutdown activated");
   await cache.close();
   sync.close();
   log.getLogger().handlers.forEach((handler) => {
@@ -29,5 +29,5 @@ export const shutdown = async () => {
   Deno.exit();
 };
 
-Deno.addSignalListener('SIGTERM', shutdown);
-Deno.addSignalListener('SIGINT', shutdown);
+Deno.addSignalListener("SIGTERM", shutdown);
+Deno.addSignalListener("SIGINT", shutdown);

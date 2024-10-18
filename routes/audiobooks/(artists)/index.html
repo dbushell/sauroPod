@@ -1,0 +1,29 @@
+<script context="module">
+  export const pattern = "/";
+
+  export const load = async ({fetch, platformProps}) => {
+    const response = await fetch(`/api/artists/`);
+    if (!response.ok) {
+      platformProps.artists = [];
+      return;
+    }
+    const data = await response.json();
+    platformProps.artists = data.artists;
+  };
+</script>
+
+<pod-layout title="Audiobooks">
+  <h1>
+    <span>{{title}}</span>
+  </h1>
+  <pod-list empty="No audiobooks found">
+    <ssr-for item="artist" of="artists">
+      <li>
+        <a class="flex gap-xs jc-between ai-start" href="/audiobooks/{{artist.id}}/">
+          <span class="p">{{artist.title}}</span>
+          <span class="color-subtle small monospace">{{artist.count}}</span>
+        </a>
+      </li>
+    </ssr-for>
+  </pod-list>
+</pod-layout>

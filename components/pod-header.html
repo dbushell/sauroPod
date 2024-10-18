@@ -1,0 +1,38 @@
+<script context="component">
+  const {pathname} = new URL($global.url);
+  const isPodcasts = /^\/(podcasts|episodes)\//.test(pathname);
+  const isMedia = /^\/(audiobooks)\//.test(pathname);
+  const isBookmarks = pathname.startsWith('/bookmarks/');
+  const isSettings = pathname.startsWith('/settings/');
+</script>
+
+<sauropod-header>
+  <header class="Grid | Header">
+    <div class="Header__main">
+      <a class="Header__logo | flex gap-2xs ai-center" href="/">
+        <span>{{app}}</span>
+      </a>
+      <div class="Header__menu">
+        <pod-button disabled icon small label="Stop" id="player-stop" classes="{{['Button--warn']}}">
+          <ssr-fragment slot="icon"><icon-stop /></ssr-fragment>
+        </pod-button>
+      </div>
+      <div class="Header__menu">
+        <div class="Button-group">
+          <pod-button icon small label="Podcasts" href="/podcasts/" aria-current="{{isPodcasts ? 'page' : undefined}}">
+            <ssr-fragment slot="icon"><icon-podcasts /></ssr-fragment>
+          </pod-button>
+          <pod-button icon small label="Media" href="/audiobooks/" aria-current="{{isMedia ? 'page' : undefined}}" >
+            <ssr-fragment slot="icon"><icon-media /></ssr-fragment>
+          </pod-button>
+          <pod-button icon small label="Bookmarks" href="/bookmarks/" aria-current="{{isBookmarks ? 'page' : undefined}}" >
+            <ssr-fragment slot="icon"><icon-bookmarks /></ssr-fragment>
+          </pod-button>
+          <pod-button icon small label="Settings" href="/settings/" aria-current="{{isSettings ? 'page' : undefined}}">
+            <ssr-fragment slot="icon"><icon-settings /></ssr-fragment>
+          </pod-button>
+        </div>
+      </div>
+    </div>
+  </header>
+</sauropod-header>

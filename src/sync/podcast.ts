@@ -2,57 +2,60 @@
  * Podcast sync module.
  * @module
  */
-import type {Podcast} from '@src/types.ts';
-import {Queue} from '@dbushell/carriageway';
-import * as html from '@std/html';
-import * as xml from '@dbushell/xml-streamify';
-import * as kv from '@src/kv/mod.ts';
+import type { Podcast } from "@src/types.ts";
+import { Queue } from "@dbushell/carriageway";
+import * as html from "@std/html";
+import * as xml from "@dbushell/xml-streamify";
+import * as kv from "@src/kv/mod.ts";
 
 const queue = new Queue<URL, Podcast>({
-  concurrency: 5
+  concurrency: 5,
 });
 
 const callback = async (url: URL): Promise<Podcast> => {
   // Update existing or add new Podcast data
   const data: Partial<Podcast> = (await kv.getPodcastByURL(url.href)) ?? {
     id: kv.uuid(),
-    url: url.href
+    url: url.href,
   };
   // Remove existing data to ensure updates
   data.title = undefined;
   data.modified = undefined;
   const controller = new AbortController();
   const timeout = setTimeout(() => {
-    controller.abort('Sync timeout');
+    controller.abort("Sync timeout");
   }, 30_000);
   const parser = xml.parse(url.href, {
-    signal: controller.signal
+    signal: controller.signal,
   });
   // Fallback data if no item is found
   let image: string | undefined;
   let modified: Date | undefined;
   for await (const node of parser) {
-    if (node.is('channel', 'title')) {
+    if (node.is("channel", "title")) {
       data.title = html.unescape(node.innerText.trim());
     }
     // Prefer as fallback
-    if (node.is('channel', 'pubDate')) {
+    if (node.is("channel", "pubDate")) {
       modified = new Date(html.unescape(node.innerText.trim()));
     }
     // Use as last resort fallback
-    if (node.is('channel', 'lastBuildDate')) {
+    if (node.is("channel", "lastBuildDate")) {
       modified ??= new Date(html.unescape(node.innerText.trim()));
     }
     // Use immediately
-    if (node.is('channel', 'item', 'pubDate')) {
+    if (node.is("channel", "item", "pubDate")) {
       data.modified = new Date(html.unescape(node.innerText.trim()));
     }
     // Use as fallback
-    if (node.is('channel', 'image', 'url')) {
+    if (node.is("channel", "image", "url")) {
       image ??= node.innerText.trim();
     }
     // Prefer itunes image
-    if (node.is('channel', 'itunes:image') && Object.hasOwn(node.attributes, 'href')) {
+    if (
+      node.is("channel", "itunes:image") &&
+      Object.hasOwn(node.attributes, "href")
+    ) {
       image = node.attributes.href;
     }
     if (data.title && data.modified) {

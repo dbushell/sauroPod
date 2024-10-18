@@ -1,10 +1,9 @@
 /*
 !.gitignore
-!deno.json
+!deno.jsonc
 !docker-compose.yml
 !mod.ts
 !README.md
-!app.html
 !static
 !src
 src/**/*.*
@@ -12,8 +11,8 @@ src/**/*.*
 !src/**/LICENSE
 !components
 components/**/*.*
-!components/**/*.svelte
+!components/**/*.html
 !routes
 routes/**/*.*
 !routes/**/*.ts
-!routes/**/*.svelte
+!routes/**/*.html

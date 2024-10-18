@@ -2,11 +2,11 @@
  * Artist KV module.
  * @module
  */
-import type {Artist, Album, Song} from '@src/types.ts';
-import {db, isUUID, isArtist, isAlbum, isSong} from './mod.ts';
-import {naturalSort} from '@src/shared/mod.ts';
+import type { Album, Artist, Song } from "@src/types.ts";
+import { db, isAlbum, isArtist, isSong, isUUID } from "./mod.ts";
+import { naturalSort } from "@src/utils/mod.ts";
 
-type Prefix = 'artist' | 'album' | 'song';
+type Prefix = "artist" | "album" | "song";
 type Entity = Artist | Album | Song;
 
 /** Get Media by IDs */
@@ -14,9 +14,9 @@ export const getMedias = async <T extends Entity>(
   prefix: Prefix,
   ...ids: Array<string>
 ): Promise<Array<T>> => {
-  if (ids.some((id) => !isUUID(id))) throw new Error('Invalid ID');
-  const list = db.list<T>({prefix: [prefix, ...ids]});
-  const items = await Array.fromAsync(list, ({value}) => value);
+  if (ids.some((id) => !isUUID(id))) throw new Error("Invalid ID");
+  const list = db.list<T>({ prefix: [prefix, ...ids] });
+  const items = await Array.fromAsync(list, ({ value }) => value);
   naturalSort<T>(items);
   return items;
 };
@@ -26,7 +26,7 @@ export const getMedia = async <T extends Entity>(
   prefix: Prefix,
   ...ids: Array<string>
 ): Promise<T | null> => {
-  if (ids.some((id) => !isUUID(id))) throw new Error('Invalid ID');
+  if (ids.some((id) => !isUUID(id))) throw new Error("Invalid ID");
   const entry = await db.get<T>([prefix, ...ids]);
   return entry.value;
 };
@@ -35,15 +35,15 @@ export const getMedia = async <T extends Entity>(
 export const setMedia = async <T extends Entity>(prefix: Prefix, data: T) => {
   const key: Array<string> = [prefix];
   switch (prefix) {
-    case 'artist':
-      if (!isArtist(data as Artist)) throw new Error('Invalid Artist');
+    case "artist":
+      if (!isArtist(data as Artist)) throw new Error("Invalid Artist");
       break;
-    case 'album':
-      if (!isAlbum(data as Album)) throw new Error('Invalid Album');
+    case "album":
+      if (!isAlbum(data as Album)) throw new Error("Invalid Album");
       key.push((data as Album).artistId);
       break;
-    case 'song':
-      if (!isSong(data as Song)) throw new Error('Invalid Song');
+    case "song":
+      if (!isSong(data as Song)) throw new Error("Invalid Song");
       key.push((data as Song).artistId);
       key.push((data as Song).albumId);
       break;
@@ -54,9 +54,9 @@ export const setMedia = async <T extends Entity>(prefix: Prefix, data: T) => {
   if (!result.ok) return false;
   const entity = await getMedia<T>(prefix, ...key.slice(1));
   if (entity) {
-    const event = prefix + (entry.value ? `:update` : ':add');
+    const event = prefix + (entry.value ? `:update` : ":add");
     setTimeout(() => {
-      dispatchEvent(new CustomEvent<T>(event, {detail: entity}));
+      dispatchEvent(new CustomEvent<T>(event, { detail: entity }));
     }, 0);
     return true;
   }
@@ -64,8 +64,11 @@ export const setMedia = async <T extends Entity>(prefix: Prefix, data: T) => {
 };
 
 /** Delete Media by ID */
-export const deleteMedia = async <T extends Entity>(prefix: Prefix, ...ids: Array<string>) => {
-  if (ids.some((id) => !isUUID(id))) throw new Error('Invalid ID');
+export const deleteMedia = async <T extends Entity>(
+  prefix: Prefix,
+  ...ids: Array<string>
+) => {
+  if (ids.some((id) => !isUUID(id))) throw new Error("Invalid ID");
   const key = [prefix, ...ids];
   const entry = await db.get<T>(key);
   if (!entry.value) return false;
@@ -73,7 +76,7 @@ export const deleteMedia = async <T extends Entity>(prefix: Prefix, ...ids: Arra
   if (!result.ok) return false;
   const event = `${prefix}:delete`;
   setTimeout(() => {
-    dispatchEvent(new CustomEvent<T>(event, {detail: entry.value!}));
+    dispatchEvent(new CustomEvent<T>(event, { detail: entry.value! }));
   }, 0);
   return true;
 };
@@ -81,41 +84,48 @@ export const deleteMedia = async <T extends Entity>(prefix: Prefix, ...ids: Arra
 /** Return all Artists */
 export const getArtists = (id?: string): Promise<Array<Artist>> => {
   const ids = id ? [id] : [];
-  return getMedias<Artist>('artist', ...ids);
+  return getMedias<Artist>("artist", ...ids);
 };
 
 /** Return single Artist by ID */
 export const getArtist = (id: string): Promise<Artist | null> => {
-  return getMedia<Artist>('artist', id);
+  return getMedia<Artist>("artist", id);
 };
 
 /** Return all Albums, all Albums for Artist ID  */
 export const getAlbums = (entity?: Artist | Album): Promise<Array<Album>> => {
   const ids: Array<string> = [];
   if (entity) {
-    if ('artistId' in entity) ids.push(entity.artistId);
+    if ("artistId" in entity) ids.push(entity.artistId);
     ids.push(entity.id);
   }
-  return getMedias<Album>('album', ...ids);
+  return getMedias<Album>("album", ...ids);
 };
 
 /** Retrun single Album by ID */
-export const getAlbum = (artistId: string, id: string): Promise<Album | null> => {
-  return getMedia<Album>('album', artistId, id);
+export const getAlbum = (
+  artistId: string,
+  id: string,
+): Promise<Album | null> => {
+  return getMedia<Album>("album", artistId, id);
 };
 
 /** Return all Songs, all Songs for Album ID, or single Song by ID */
 export const getSongs = (entity?: Album | Song): Promise<Array<Song>> => {
   const ids: Array<string> = [];
   if (entity) {
-    if ('artistId' in entity) ids.push(entity.artistId);
-    if ('albumId' in entity) ids.push(entity.albumId);
+    if ("artistId" in entity) ids.push(entity.artistId);
+    if ("albumId" in entity) ids.push(entity.albumId);
     ids.push(entity.id);
   }
-  return getMedias<Song>('song', ...ids);
+  return getMedias<Song>("song", ...ids);
 };
 
 /** Return single Song by ID */
-export const getSong = (artistId: string, albumId: string, id: string): Promise<Song | null> => {
-  return getMedia<Song>('song', artistId, albumId, id);
+export const getSong = (
+  artistId: string,
+  albumId: string,
+  id: string,
+): Promise<Song | null> => {
+  return getMedia<Song>("song", artistId, albumId, id);
 };

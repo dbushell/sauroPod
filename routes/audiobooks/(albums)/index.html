@@ -1,0 +1,39 @@
+<script context="module">
+  const id = '[a-f\\d]{8}-[a-f\\d]{4}-4[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
+  export const pattern = `/:id(${id})/`;
+
+  export const load = async ({fetch, params, platformProps}) => {
+    const response = await fetch(`/api/albums/${params.id}/`);
+    if (!response.ok) {
+      platformProps.artists = [];
+      platformProps.albums = [];
+      platformProps.title = 'Audiobooks';
+      return;
+    }
+    const data = await response.json();
+    platformProps.artists = data.artists;
+    platformProps.albums = data.albums;
+    platformProps.title = `${data.artists[0].title} - Audiobooks`;
+  };
+</script>
+
+<pod-layout title="{{title}}">
+  <h1>
+    <span>{{artists?.[0]?.title ?? title}}</span>
+  </h1>
+  <pod-list empty="No audiobooks found">
+    <li>
+      <a class="flex gap-xs jc-between ai-start" href="/audiobooks/">
+        <span class="p color-subtle">Return</span>
+      </a>
+    </li>
+    <ssr-for item="album" of="albums">
+      <li>
+        <a class="flex gap-xs jc-between ai-start" href="/audiobooks/{{album.artistId}}/{{album.id}}/">
+          <span class="p">{{album.title}}</span>
+          <span class="color-subtle small monospace">{{album.count}}</span>
+        </a>
+      </li>
+    </ssr-for>
+  </pod-list>
+</pod-layout>

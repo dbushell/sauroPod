@@ -1,0 +1,48 @@
+<sauropod-player class="Grid | Container Container--light">
+  <aside>
+    <h2 class="hidden">Audio Player</h2>
+    <div class="Stack gap-s">
+      <pod-breadcrumb />
+      <div>
+        <progress class="Progress" value="0" max="0"></progress>
+        <input disabled class="Range" type="range" aria-label="progress" min="0" max="0" />
+        <div hidden class="Seek" role="tooltip">00:00</div>
+      </div>
+      <div class="flex gap-xs jc-between ai-center">
+        <div class="order-1">
+          <span class="hidden">Current time</span>
+          <span data-range-start class="small monospace">00:00</span>
+        </div>
+        <div class="order-3">
+          <span class="hidden">Duration</span>
+          <span data-range-end class="small monospace">-00:00</span>
+        </div>
+        <div class="Button-group jc-center order-2" aria-label="playback controls" role="toolbar">
+          <pod-button disabled icon data-action="rewind" classes="{{['Button--skip']}}">
+            <ssr-fragment slot="icon"><icon-rewind /></ssr-fragment>
+            <span slot="label">
+              <span class="hidden">rewind</span>
+              <span>15</span>
+              <span class="hidden">seconds</span>
+            </span>
+          </pod-button>
+          <pod-button disabled icon data-action="pause" label="Pause">
+            <ssr-fragment slot="icon"><icon-pause /></ssr-fragment>
+          </pod-button>
+          <pod-button disabled icon data-action="play" label="Play">
+            <ssr-fragment slot="icon"><icon-play /></ssr-fragment>
+          </pod-button>
+          <pod-button disabled icon data-action="forward" classes="{{['Button--skip']}}">
+            <ssr-fragment slot="icon"><icon-forward /></ssr-fragment>
+            <span slot="label">
+              <span class="hidden">forward</span>
+              <span>15</span>
+              <span class="hidden">seconds</span>
+            </span>
+          </pod-button>
+        </div>
+      </div>
+      <audio preload="metadata" src=""></audio>
+    </div>
+  </aside>
+</sauropod-player>

@@ -2,56 +2,58 @@
  * Episode sync module.
  * @module
  */
-import type {Episode, Podcast} from '@src/types.ts';
-import {Queue} from '@dbushell/carriageway';
-import {log} from '@src/log.ts';
-import * as html from '@std/html';
-import * as xml from '@dbushell/xml-streamify';
-import * as kv from '@src/kv/mod.ts';
-import {encodeHash} from '@src/utils.ts';
+import type { Episode, Podcast } from "@src/types.ts";
+import { Queue } from "@dbushell/carriageway";
+import { log } from "@src/log.ts";
+import * as html from "@std/html";
+import * as xml from "@dbushell/xml-streamify";
+import * as kv from "@src/kv/mod.ts";
+import { encodeHash } from "@src/utils/mod.ts";
 
 const queue = new Queue<Podcast, void>({
-  concurrency: 5
+  concurrency: 5,
 });
 
 const callback = async (podcast: Podcast): Promise<void> => {
   const newEpisodes: Array<Episode> = [];
   const controller = new AbortController();
   const timeout = setTimeout(() => {
-    controller.abort('Sync timeout');
+    controller.abort("Sync timeout");
   }, 30_000);
   const parser = xml.parse(podcast.url, {
-    signal: controller.signal
+    signal: controller.signal,
   });
   for await (const node of parser) {
-    if (!node.is('channel', 'item')) {
+    if (!node.is("channel", "item")) {
       continue;
     }
-    const enclosure = node.first('enclosure');
+    const enclosure = node.first("enclosure");
     if (enclosure === undefined) continue;
     let duration = 0;
-    const durationText = node.first('itunes:duration')?.innerText;
+    const durationText = node.first("itunes:duration")?.innerText;
     if (durationText) {
-      for (const [i, n] of durationText.split(':').reverse().entries()) {
+      for (const [i, n] of durationText.split(":").reverse().entries()) {
         duration += Number.parseInt(n) * Math.pow(60, i);
       }
     }
     // Remove query string from url
     const url = new URL(enclosure.attributes.url);
-    url.search = '';
-    const pubDate = html.unescape(node.first('pubDate')?.innerText.trim() ?? '');
+    url.search = "";
+    const pubDate = html.unescape(
+      node.first("pubDate")?.innerText.trim() ?? "",
+    );
     const newEp: Episode = {
       duration,
-      id: '',
+      id: "",
       podcastId: podcast.id,
       url: url.href,
-      title: html.unescape(node.first('title')?.innerText.trim() ?? ''),
-      mimetype: enclosure.attributes.type ?? '',
-      date: new Date(pubDate || Date.now())
+      title: html.unescape(node.first("title")?.innerText.trim() ?? ""),
+      mimetype: enclosure.attributes.type ?? "",
+      date: new Date(pubDate || Date.now()),
     };
     // Add GUID if specified to help matching later
-    let guid = node.first('guid')?.innerText.trim() ?? '';
-    guid = guid.replace(/^<!\[CDATA\[(.*)]]>$/, '$1');
+    let guid = node.first("guid")?.innerText.trim() ?? "";
+    guid = guid.replace(/^<!\[CDATA\[(.*)]]>$/, "$1");
     if (guid) {
       newEp.guid = await encodeHash(guid);
     }
@@ -78,7 +80,9 @@ const callback = async (podcast: Podcast): Promise<void> => {
     }
     // Find existing episode by title and url
     if (!oldEp) {
-      oldEp = oldEpisodes.find((e) => e.title === newEp.title && e.url === newEp.url);
+      oldEp = oldEpisodes.find((e) =>
+        e.title === newEp.title && e.url === newEp.url
+      );
     }
     // Add new episode if not found
     if (oldEp === undefined) {
@@ -89,7 +93,9 @@ const callback = async (podcast: Podcast): Promise<void> => {
     newEp.id = oldEp.id;
     episodeIds.add(newEp.id);
     const changed = Object.entries(newEp).find(
-      ([key, value]) => key in oldEp && oldEp[key as keyof Episode]!.toString() !== value.toString()
+      ([key, value]) =>
+        key in oldEp &&
+        oldEp[key as keyof Episode]!.toString() !== value.toString(),
     );
     if (changed) {
       await kv.setEpisode(newEp);
@@ -115,7 +121,9 @@ const callback = async (podcast: Podcast): Promise<void> => {
   }
 
   setTimeout(() => {
-    dispatchEvent(new CustomEvent<Podcast>('podcast:sync', {detail: podcast}));
+    dispatchEvent(
+      new CustomEvent<Podcast>("podcast:sync", { detail: podcast }),
+    );
   }, 0);
 };
 

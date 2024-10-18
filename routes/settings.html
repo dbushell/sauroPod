@@ -1,0 +1,44 @@
+<script context="module">
+  export const pattern = "/";
+
+  export const load = async ({fetch, platformProps}) => {
+    const response = await fetch(`/api/podcasts/`);
+    if (!response.ok) {
+      platformProps.podcasts = [];
+      return;
+    }
+    const data = await response.json();
+    platformProps.podcasts = data.podcasts;
+  };
+</script>
+
+<pod-layout title="Settings">
+  <h1>{{title}}</h1>
+  <form class="Stack gap-xs" method="POST" action="/api/podcasts/">
+    <label for="url" class="p">Add Feed URL:</label>
+    <div class="flex gap-xs">
+      <input required type="url" name="url" id="url" class="Field flex-grow-1" autocomplete="off" />
+      <pod-button type="submit" label="Add New" classes="{{['flex-shrink-0']}}" />
+    </div>
+  </form>
+  <pod-list empty="No podcasts found">
+    <ssr-for item="podcast" of="podcasts">
+      <li>
+        <form class="Stack gap-xs" method="POST" action="/api/podcasts/{{podcast.id}}/">
+          <label for="{{podcast.id}}-url" class="small">{{podcast.title}}:</label>
+          <div class="flex gap-xs">
+            <input
+              readonly
+              required
+              type="url"
+              class="Field flex-grow-1"
+              id="{{podcast.id}}-url"
+              value={{podcast.url}}
+            />
+            <pod-button type="submit" label="Remove" classes="{{['flex-shrink-0']}}" />
+          </div>
+        </form>
+      </li>
+    </ssr-for>
+  </pod-list>
+</pod-layout>

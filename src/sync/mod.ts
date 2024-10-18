@@ -2,20 +2,20 @@
  * Data synchronization module.
  * @module
  */
-import {log} from '@src/log.ts';
+import { log } from "@src/log.ts";
 
-const worker = new Worker(import.meta.resolve('./worker.ts'), {
-  type: 'module'
+const worker = new Worker(import.meta.resolve("./worker.ts"), {
+  type: "module",
 });
 
 let deferred: ReturnType<typeof Promise.withResolvers<void>> | null = null;
 
-worker.addEventListener('message', (ev: MessageEvent) => {
-  if (ev.data === 'sync') {
+worker.addEventListener("message", (ev: MessageEvent) => {
+  if (ev.data === "sync") {
     if (deferred) deferred.resolve();
   }
   if (ev.data.event && ev.data.detail) {
-    dispatchEvent(new CustomEvent(ev.data.event, {detail: ev.data.detail}));
+    dispatchEvent(new CustomEvent(ev.data.event, { detail: ev.data.detail }));
   }
 });
 
@@ -24,7 +24,7 @@ export const syncPodcasts = async () => {
   const now = performance.now();
   if (deferred === null) {
     deferred = Promise.withResolvers();
-    worker.postMessage('sync');
+    worker.postMessage("sync");
   }
   await deferred.promise;
   deferred = null;

@@ -1,0 +1,31 @@
+<script context="component">
+  let progress = 0;
+  if ($local.bookmark) {
+    progress = Math.round((100 / episode.duration) * $local.bookmark.position);
+  }
+</script>
+
+<a id="episode-{{episode.id}}" href="/episodes/{{episode.id}}/" class="Stack gap-xs">
+  <div class="flex gap-xs ai-center">
+    <img alt="{{episode.title}}" src="/api/artwork/{{podcast.id}}/" class="flex-shrink-0" decoding="async" fetchpriority="low" loading="lazy" />
+    <div class="flex-grow-1">
+      <span class="p{{episode.played ? ' color-success' : ''}}">
+        <ssr-if condition="episode.played">
+          <icon-played />
+        </ssr-if>
+        <span>{{episode.title}}</span>
+      </span>
+      <div class="flex jc-between ai-start">
+        <time class="color-subtle small" datetime="{{episode.date}}">
+          <span>{{episode.dateFormat}}</span>
+        </time>
+        <ssr-if condition="episode.duration">
+          <span class="color-subtle small monospace">
+            {{episode.durationFormat}}
+          </span>
+        </ssr-if>
+      </div>
+    </div>
+  </div>
+  <progress class="Progress" max="100" value="{{progress}}"></progress>
+</a>

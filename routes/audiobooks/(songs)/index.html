@@ -1,0 +1,46 @@
+<script context="module">
+  import {formatTime} from "@src/utils/format.ts";
+
+  const id = '[a-f\\d]{8}-[a-f\\d]{4}-4[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
+  export const pattern = `/:artistId(${id})/:albumId(${id})/`;
+
+  export const load = async ({fetch, params, platformProps}) => {
+    const response = await fetch(`/api/songs/${params.artistId}/${params.albumId}/`);
+    if (!response.ok) {
+      platformProps.artists = [];
+      platformProps.albums = [];
+      platformProps.songs = [];
+      platformProps.title = 'Audiobooks';
+      return;
+    }
+    const data = await response.json();
+    data.songs.forEach((song) => {
+      song.durationFormat = formatTime(song.duration);
+    });
+    platformProps.artists = data.artists;
+    platformProps.albums = data.albums;
+    platformProps.songs = data.songs;
+    platformProps.title = `${data.albums[0].title} - ${data.artists[0].title} - Audiobooks`;
+  };
+</script>
+
+<pod-layout title="{{title}}">
+  <h1>
+    <span>{{albums?.[0]?.title ?? title}}</span>
+  </h1>
+  <pod-list empty="No audiobooks found">
+    <li>
+      <a class="flex gap-xs jc-between ai-start" href="/audiobooks/{{artists[0].id}}/">
+        <span class="p color-subtle">Return</span>
+      </a>
+    </li>
+    <ssr-for item="song" of="songs">
+      <li>
+        <button type="button" class="flex gap-xs jc-between ai-start Anchor" data-play="/songs/{{song.artistId}}/{{song.albumId}}/{{song.id}}/">
+          <span class="p">{{song.title}}</span>
+          <span class="color-subtle small monospace">{{song.durationFormat}}</span>
+        </button>
+      </li>
+    </ssr-for>
+  </pod-list>
+</pod-layout>

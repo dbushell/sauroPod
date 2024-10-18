@@ -1,0 +1,31 @@
+<script context="module">
+  import {formatTime} from "@src/utils/format.ts";
+
+  export const pattern = "/";
+
+  export const load = async ({fetch, platformProps}) => {
+    const response = await fetch(`/api/bookmarks/`);
+    if (!response.ok) {
+      platformProps.podcasts = [];
+      return;
+    }
+    const data = await response.json();
+    data.bookmarks.forEach((bookmark) => {
+      bookmark.positionFormat = formatTime(bookmark.position);
+    })
+    platformProps.bookmarks = data.bookmarks;
+  };
+</script>
+
+<pod-layout title="Bookmarks">
+  <h1>{{title}}</h1>
+  <sauropod-bookmarks>
+    <pod-list empty="No bookmarks found">
+      <ssr-for item="bookmark" of="bookmarks">
+        <li>
+          <list-bookmark entity="{{bookmark}}" />
+        </li>
+      </ssr-for>
+    </pod-list>
+  </sauropod-bookmarks>
+</pod-layout>

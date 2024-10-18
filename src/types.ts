@@ -2,6 +2,8 @@ export type Bookmark = {
   ids: Array<string>;
   /** Time listened up to (seconds) */
   position: number;
+  positionFormat?: string;
+  progress?: number;
   date: Date;
 };
 
@@ -9,19 +11,21 @@ export type Episode = {
   id: string;
   podcastId: string;
   date: Date;
+  dateFormat?: string;
   url: string;
   title: string;
   /** Audio duration (seconds) */
   duration: number;
+  durationFormat?: string;
   mimetype: string;
   guid?: string;
   played?: boolean;
-  cached?: boolean;
 };
 
 export type Podcast = {
   id: string;
   modified: Date;
+  modifiedFormat?: string;
   url: string;
   title: string;
   image: string;
@@ -57,50 +61,62 @@ export type Song = {
   path: string;
   /** Audio duration (seconds) */
   duration: number;
+  durationFormat?: string;
   mimetype: string;
 };
 
 export type AudioEntity = {
-  type: 'audiobook' | 'podcast';
+  type: "audiobook" | "podcast";
   ids: Array<string>;
   titles: Array<string>;
   duration: number;
   bookmark?: Bookmark;
 };
 
-export type SongEntry = Pick<Song, 'title' | 'path'>;
-export type AlbumEntry = Pick<Album, 'title' | 'path'> & {songs: Array<SongEntry>};
-export type ArtistEntry = Pick<Artist, 'title' | 'path'> & {albums: Array<AlbumEntry>};
+export type SongEntry = Pick<Song, "title" | "path">;
+export type AlbumEntry = Pick<Album, "title" | "path"> & {
+  songs: Array<SongEntry>;
+};
+export type ArtistEntry = Pick<Artist, "title" | "path"> & {
+  albums: Array<AlbumEntry>;
+};
 
 export type APIData = {
   bookmarks?: Array<
-    Bookmark & {episode?: Episode; podcast?: Podcast; artist?: Artist; album?: Album; song?: Song}
+    Bookmark & {
+      episode?: Episode;
+      podcast?: Podcast;
+      artist?: Artist;
+      album?: Album;
+      song?: Song;
+    }
   >;
-  episodes?: Array<Episode & {podcast: Podcast; bookmark?: Bookmark}>;
-  podcasts?: Array<Podcast & {episodes?: Array<Episode>}>;
+  episodes?: Array<Episode & { podcast: Podcast; bookmark?: Bookmark }>;
+  podcasts?: Array<Podcast & { episodes?: Array<Episode> }>;
   artists?: Array<Artist>;
   albums?: Array<Album>;
-  songs?: Array<Song & {bookmark?: Bookmark}>;
+  songs?: Array<Song & { bookmark?: Bookmark }>;
 };
 
-export type ServerData = APIData & {
-  fragment?: boolean;
-};
+// export type ServerData = APIData & {
+//   fragment?: boolean;
+// };
 
-export type PublicData = {
-  app: string;
-  version: string;
-  page?: number;
-};
+// export type PublicData = {
+//   app: string;
+//   dev: boolean;
+//   version: string;
+//   page?: number;
+// };
 
-export type Data = {
-  publicData: PublicData;
-  serverData: ServerData;
-};
+// export type Data = {
+//   publicData: PublicData;
+//   serverData: ServerData;
+// };
 
 export type CacheOptions = {
   maxAge?: number;
-  media?: 'audio' | 'image' | 'json' | 'rss';
+  media?: "audio" | "image" | "json" | "rss";
   prefetch?: boolean;
 };
 
@@ -109,3 +125,18 @@ export type CacheItem = {
   options: CacheOptions;
   url: string;
 };
+
+export type OfflineDownload = {
+  contentLength: number;
+  contentSize: number;
+  progress: number;
+};
+
+export type OfflineStore = {
+  cached: Set<string>;
+  downloads: Map<string, OfflineDownload>;
+  usage: number;
+  quota: number;
+};
+
+export type Deferred<T> = ReturnType<typeof Promise.withResolvers<T>>;

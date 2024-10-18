@@ -1,0 +1,32 @@
+<script context="module">
+  import {formatDate} from "@src/utils/format.ts";
+  export const pattern = "/";
+
+  export const load = async ({fetch, platformProps}) => {
+    const response = await fetch(`/api/podcasts/`);
+    if (!response.ok) {
+      platformProps.podcasts = [];
+      return;
+    }
+    const data = await response.json();
+    data.podcasts.forEach((podcast) => {
+      podcast.modifiedFormat = formatDate(new Date(podcast.modified));
+    });
+    platformProps.podcasts = data.podcasts;
+  };
+</script>
+
+<pod-layout title="Podcasts">
+  <h1>
+    <a href="/podcasts/">
+      <span>{{title}}</span>
+    </a>
+  </h1>
+  <pod-list empty="No podcasts found">
+    <ssr-for item="podcast" of="podcasts">
+      <li>
+        <list-podcast />
+      </li>
+    </ssr-for>
+  </pod-list>
+</pod-layout>

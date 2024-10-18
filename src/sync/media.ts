@@ -2,23 +2,24 @@
  * Media sync module.
  * @module
  */
-import type {ArtistEntry, AlbumEntry, SongEntry} from '@src/types.ts';
-import type {Artist, Album, Song} from '@src/types.ts';
-import {log} from '@src/log.ts';
-import * as path from '@std/path';
-import {duration as audioDuration} from '@dbushell/audio-duration';
-import * as db from '@src/kv/mod.ts';
+import type { AlbumEntry, ArtistEntry, SongEntry } from "@src/types.ts";
+import type { Album, Artist, Song } from "@src/types.ts";
+import { log } from "@src/log.ts";
+import * as path from "@std/path";
+import { duration as audioDuration } from "@dbushell/audio-duration";
+import * as db from "@src/kv/mod.ts";
 
 /** File extensions to consider as audio when syncing media */
-const EXTENSIONS = ['mp3', 'mp4', 'm4a', 'm4b'];
+const EXTENSIONS = ["mp3", "mp4", "m4a", "m4b"];
 
 /** Directory names must begin with `[A-Za-z0-9_]` character class */
 const DIR = /^\w/;
 
 // File names must end with extension and not begin "." or "_"
-const FILE = new RegExp(`^(?!\\.|_).*\\.(${EXTENSIONS.join('|')})$`);
+const FILE = new RegExp(`^(?!\\.|_).*\\.(${EXTENSIONS.join("|")})$`);
 
-const mediaPath = Deno.env.get('APP_MEDIA_PATH') ?? path.join(Deno.cwd(), './.media');
+const mediaPath = Deno.env.get("APP_MEDIA_PATH") ??
+  path.join(Deno.cwd(), "./.media");
 
 const checkMediaPath = () => {
   try {
@@ -58,19 +59,19 @@ const getFiles = async (root: string) => {
 
 const mapSongs = (entry: string): SongEntry => ({
   path: entry,
-  title: path.parse(entry).name
+  title: path.parse(entry).name,
 });
 
 const mapAlbums = async (entry: string): Promise<AlbumEntry> => ({
   path: entry,
   title: path.basename(entry),
-  songs: await Promise.all((await getFiles(entry)).map(mapSongs))
+  songs: await Promise.all((await getFiles(entry)).map(mapSongs)),
 });
 
 const mapArtists = async (entry: string): Promise<ArtistEntry> => ({
   path: entry,
   title: path.basename(entry),
-  albums: await Promise.all((await getDirs(entry)).map(mapAlbums))
+  albums: await Promise.all((await getDirs(entry)).map(mapAlbums)),
 });
 
 const mapMedia = async (root: string): Promise<Array<ArtistEntry>> => {
@@ -78,43 +79,63 @@ const mapMedia = async (root: string): Promise<Array<ArtistEntry>> => {
 };
 
 /** Find or add Artist to database */
-export const ensureArtist = async (entry: ArtistEntry, artists: Array<Artist>) => {
-  let artist = artists.find((a) => a.title === entry.title && a.path === entry.path);
+export const ensureArtist = async (
+  entry: ArtistEntry,
+  artists: Array<Artist>,
+) => {
+  let artist = artists.find((a) =>
+    a.title === entry.title && a.path === entry.path
+  );
   if (artist) return artist;
   artist = {
     id: db.uuid(),
     title: entry.title,
     path: entry.path,
-    count: 0
+    count: 0,
   };
-  const result = await db.setMedia<Artist>('artist', artist);
+  const result = await db.setMedia<Artist>("artist", artist);
   if (result) return artist;
   throw new Error(`Artist "${entry.path}"`);
 };
 
 /** Find or add Album to database */
-export const ensureAlbum = async (entry: AlbumEntry, albums: Album[], artist: Artist) => {
-  let album = albums.find((a) => a.title === entry.title && a.path === entry.path);
+export const ensureAlbum = async (
+  entry: AlbumEntry,
+  albums: Album[],
+  artist: Artist,
+) => {
+  let album = albums.find((a) =>
+    a.title === entry.title && a.path === entry.path
+  );
   if (album) return album;
   album = {
     id: db.uuid(),
     artistId: artist.id,
     title: entry.title,
     path: entry.path,
-    count: 0
+    count: 0,
   };
-  const result = await db.setMedia<Album>('album', album);
+  const result = await db.setMedia<Album>("album", album);
   if (result) return album;
   throw new Error(`Album "${entry.path}"`);
 };
 
 /** Find or add Song to database */
-export const ensureSong = async (entry: SongEntry, songs: Song[], artist: Artist, album: Album) => {
-  let song = songs.find((s) => s.title === entry.title && s.path === entry.path);
+export const ensureSong = async (
+  entry: SongEntry,
+  songs: Song[],
+  artist: Artist,
+  album: Album,
+) => {
+  let song = songs.find((s) =>
+    s.title === entry.title && s.path === entry.path
+  );
   if (song) return song;
   try {
     const duration = (await audioDuration(entry.path)) / 1000;
-    const mimetype = path.extname(entry.path) === '.mp3' ? 'audio/mpeg' : 'audio/mp4';
+    const mimetype = path.extname(entry.path) === ".mp3"
+      ? "audio/mpeg"
+      : "audio/mp4";
     if (!duration) {
       throw new Error(`Duration "${entry.path}"`);
     }
@@ -125,9 +146,9 @@ export const ensureSong = async (entry: SongEntry, songs: Song[], artist: Artist
       title: entry.title,
       path: entry.path,
       duration,
-      mimetype
+      mimetype,
     };
-    const result = await db.setMedia<Song>('song', song);
+    const result = await db.setMedia<Song>("song", song);
     if (result) return song;
     throw new Error(`Song "${entry.path}"`);
   } catch (err) {
@@ -151,12 +172,12 @@ export const syncMedia = async () => {
       }
       if (album.count !== songs.length) {
         album.count = songs.length;
-        await db.setMedia<Artist>('album', album);
+        await db.setMedia<Artist>("album", album);
       }
     }
     if (artist.count !== albums.length) {
       artist.count = albums.length;
-      await db.setMedia<Artist>('artist', artist);
+      await db.setMedia<Artist>("artist", artist);
     }
   }
   for (const artist of await db.getArtists()) {
@@ -164,7 +185,7 @@ export const syncMedia = async () => {
       const stat = await Deno.lstat(artist.path);
       if (!stat.isDirectory) throw new Error();
     } catch {
-      await db.deleteMedia<Artist>('artist', artist.id);
+      await db.deleteMedia<Artist>("artist", artist.id);
     }
   }
   for (const album of await db.getAlbums()) {
@@ -172,7 +193,7 @@ export const syncMedia = async () => {
       const stat = await Deno.lstat(album.path);
       if (!stat.isDirectory) throw new Error();
     } catch {
-      await db.deleteMedia<Album>('album', album.artistId, album.id);
+      await db.deleteMedia<Album>("album", album.artistId, album.id);
     }
   }
   for (const song of await db.getSongs()) {
@@ -180,7 +201,7 @@ export const syncMedia = async () => {
       const stat = await Deno.lstat(song.path);
       if (!stat.isFile) throw new Error();
     } catch {
-      await db.deleteMedia<Song>('song', song.artistId, song.albumId, song.id);
+      await db.deleteMedia<Song>("song", song.artistId, song.albumId, song.id);
     }
   }
   log.info(`Media sync in ${((performance.now() - now) / 1000).toFixed(2)}s`);

@@ -1,0 +1,45 @@
+<script context="component">
+  const pageTitle = $local.title ? `${$local.title} - ${app}` : app;
+</script>
+<!DOCTYPE html>
+<html dir="ltr" lang="en" data-theme="dark" data-deploy="{{deployHash}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preload" as="font" href="/fonts/Sora-Variable.woff2?v={{deployHash}}" type="font/woff2">
+  <link rel="preload" as="font" href="/fonts/RedditMono-Light.woff2?v={{deployHash}}" type="font/woff2">
+  <title>{{pageTitle}}</title>
+  <meta name="application-name" content="sauroPod">
+  <meta name="theme-color" content="#14161d">
+  <link rel="manifest" href="/app.webmanifest?v={{deployHash}}">
+  <link rel="icon" sizes="32x32" href="/favicon.ico?v={{deployHash}}">
+  <link rel="icon" type="image/svg+xml" href="/512x512.svg?v={{deployHash}}">
+  <link rel="apple-touch-icon" sizes="180x180" href="/180x180.png?v={{deployHash}}">
+  <link rel="stylesheet" href="/app.min.css?v={{deployHash}}">
+  <link rel="stylesheet" href="/sauropod.css?v={{deployHash}}">
+  <link rel="modulepreload" href="/scripts/sauropod-state.js?v={{deployHash}}">
+  <link rel="modulepreload" href="/scripts/sauropod-session.js?v={{deployHash}}">
+  <link rel="modulepreload" href="/scripts/sauropod-utils.js?v={{deployHash}}">
+  <link rel="modulepreload" href="/scripts/sauropod-offline.js?v={{deployHash}}">
+  <script type="module" src="/scripts/sauropod-header.js?v={{deployHash}}"></script>
+  <script type="module" src="/scripts/sauropod-player.js?v={{deployHash}}"></script>
+  <script type="module" src="/scripts/sauropod-episodes.js?v={{deployHash}}"></script>
+  <script type="module" src="/scripts/sauropod-bookmarks.js?v={{deployHash}}"></script>
+  <script type="module" src="/scripts/sauropod-breadcrumb.js?v={{deployHash}}"></script>
+  <script type="module" src="/scripts/sauropod-main.js?v={{deployHash}}"></script>
+  <script type="module" src="/scripts/sauropod-footer.js?v={{deployHash}}"></script>
+  <ssr-portal name="head" />
+</head>
+<body class="Body">
+  <div class="App">
+    <pod-header />
+    <pod-player />
+    <sauropod-main class="Grid | Container">
+      <main class="Stack">
+        <ssr-slot />
+      </main>
+    </sauropod-main>
+    <pod-footer />
+  </div>
+</body>
+</html>

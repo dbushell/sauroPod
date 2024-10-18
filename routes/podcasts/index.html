@@ -1,0 +1,73 @@
+<script context="module">
+  import {formatDate, formatTime} from "@src/utils/format.ts";
+
+  const id = '[a-f\\d]{8}-[a-f\\d]{4}-4[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}';
+  export const pattern = `/:id(${id})/:page(\\d+)?/`;
+
+  export const load = async ({fetch, params, platformProps}) => {
+    const page = Number.parseInt(params.page || '1');
+    const responses = [
+      fetch(`/api/bookmarks/${params.id}/`),
+      fetch(`/api/podcasts/${params.id}/${page}/`)
+    ];
+    await Promise.allSettled(responses);
+    const r1 = await responses[0];
+    const r2 = await responses[1];
+    if (!r1.ok || !r2.ok) {
+      return new Response(null, {status: 404});
+    }
+    const d1 = await r1.json();
+    const d2 = await r2.json();
+    d2.podcasts.forEach((podcast) => {
+      podcast.modifiedFormat = formatDate(new Date(podcast.modified));
+      podcast.episodes.forEach((episode) => {
+        episode.dateFormat = formatDate(new Date(episode.date));
+        episode.durationFormat = formatTime(episode.duration);
+      });
+    });
+    platformProps.bookmarks = d1.bookmarks;
+    platformProps.podcasts = d2.podcasts;
+    platformProps.page = page;
+    platformProps.title = d2.podcasts[0].title;
+    if (page > 1)  platformProps.title += ` (${page})`;
+    platformProps.next = "";
+    platformProps.previous = "";
+    if (page > 1) {
+      platformProps.previous = `/podcasts/${d2.podcasts[0].id}/` + (page > 2 ? `${page - 1}/` : '');
+    }
+    if (Math.ceil(d2.podcasts[0].count / 100) > page) {
+      platformProps.next = `/podcasts/${d2.podcasts[0].id}/${page + 1}/`;
+    }
+  };
+</script>
+
+<pod-layout title="{{title}}">
+  <h1>
+    <a href="/podcasts/{{podcasts[0].id}}/">
+      <span>{{title}}</span>
+    </a>
+  </h1>
+  <sauropod-episodes>
+    <pod-list empty="No episodes found">
+      <ssr-for item="episode" of="podcasts[0].episodes">
+        <li>
+          <list-episode
+            episode="{{episode}}"
+            podcast="{{podcasts[0]}}"
+            bookmark="{{bookmarks.find((b) =&gt; b.ids[1] === episode.id)}}"
+            />
+        </li>
+      </ssr-for>
+    </pod-list>
+  </sauropod-episodes>
+  <ssr-if condition="previous || next">
+    <div class="Button-pagination">
+      <pod-button icon href="{{previous}}" disabled="{{ !previous || undefined}}" label="previous page">
+        <ssr-fragment slot="icon"><icon-previous /></ssr-fragment>
+      </pod-button>
+      <pod-button icon href="{{next}}" disabled="{{ !next || undefined}}" label="next page">
+        <ssr-fragment slot="icon"><icon-next /></ssr-fragment>
+      </pod-button>
+    </div>
+  </ssr-if>
+</pod-layout>

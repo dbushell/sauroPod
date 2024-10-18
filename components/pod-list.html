@@ -1,0 +1,6 @@
+<ul class="List">
+  <ssr-if condition="typeof $local.empty === 'string'">
+    <li><p>{{$local.empty}}</p></li>
+  </ssr-if>
+  <ssr-slot />
+</ul>
