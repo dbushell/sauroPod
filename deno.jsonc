@@ -7,7 +7,7 @@
     "@dbushell/audio-duration": "jsr:@dbushell/audio-duration@^0.6.0",
     "@dbushell/carriageway": "jsr:@dbushell/carriageway@^1.1.0",
     "@dbushell/hyperless": "jsr:@dbushell/hyperless@^0.24.0",
-    "@dbushell/hyperserve": "jsr:@dbushell/hyperserve@^0.16.0",
+    "@dbushell/hyperserve": "jsr:@dbushell/hyperserve@^0.17.0",
     "@dbushell/xml-streamify": "jsr:@dbushell/xml-streamify@^0.7.0",
     "@src/": "./src/",
     "@std/assert": "jsr:@std/assert@^1.0.6",
