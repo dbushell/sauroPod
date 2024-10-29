@@ -20,9 +20,9 @@
           <span>{{episode.dateFormat}}</span>
         </time>
         <ssr-if condition="episode.duration">
-          <span class="color-subtle small monospace">
+          <data class="color-subtle small monospace" value="{{episode.duration}}">
             {{episode.durationFormat}}
-          </span>
+          </data>
         </ssr-if>
       </div>
     </div>

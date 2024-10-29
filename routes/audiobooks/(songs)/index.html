@@ -28,19 +28,21 @@
   <h1>
     <span>{{albums?.[0]?.title ?? title}}</span>
   </h1>
-  <pod-list empty="No audiobooks found">
-    <li>
-      <a class="flex gap-xs jc-between ai-start" href="/audiobooks/{{artists[0].id}}/">
-        <span class="p color-subtle">Return</span>
-      </a>
-    </li>
-    <ssr-for item="song" of="songs">
+  <sauropod-songs>
+    <pod-list empty="No audiobooks found">
       <li>
-        <button type="button" class="flex gap-xs jc-between ai-start Anchor" data-play="/songs/{{song.artistId}}/{{song.albumId}}/{{song.id}}/">
-          <span class="p">{{song.title}}</span>
-          <span class="color-subtle small monospace">{{song.durationFormat}}</span>
-        </button>
+        <a class="flex gap-xs jc-between ai-start" href="/audiobooks/{{artists[0].id}}/">
+          <span class="p color-subtle">Return</span>
+        </a>
       </li>
-    </ssr-for>
-  </pod-list>
+      <ssr-for item="song" of="songs">
+        <li>
+          <button id="song-{{song.id}}" data-href="/songs/{{song.artistId}}/{{song.albumId}}/{{song.id}}/" type="button" class="flex gap-xs jc-between ai-start Anchor">
+            <span class="p">{{song.title}}</span>
+            <data class="color-subtle small monospace" value="{{song.duration}}">{{song.durationFormat}}</data>
+          </button>
+        </li>
+      </ssr-for>
+    </pod-list>
+  </sauropod-songs>
 </pod-layout>

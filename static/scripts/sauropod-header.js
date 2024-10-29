@@ -13,7 +13,7 @@ class Component extends HTMLElement {
 
   /** @returns {HTMLButtonElement} */
   get stopButton() {
-    return this.querySelector("#player-stop");
+    return this.querySelector('[data-action="stop"]');
   }
 
   get isPodcasts() {

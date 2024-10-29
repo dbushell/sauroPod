@@ -24,11 +24,7 @@
   touch-action: manipulation;
 }
 
-:is(
-  sauropod-bookmarks,
-  sauropod-episodes,
-  sauropod-header,
-) {
+:is(sauropod-bookmarks, sauropod-episodes, sauropod-header) {
   display: contents;
 }
 
@@ -46,10 +42,6 @@ img:where([src*="/artwork/"]) {
   border-radius: calc(5 / 16 * 1rem);
   inline-size: var(--size);
   overflow: clip;
-}
-
-[data-stop]:disabled {
-  display: none;
 }
 
 h1 {
@@ -152,6 +144,12 @@ h1 {
 .Container {
   & :is(aside, main) {
     grid-column: inner-start / inner-end;
+  }
+}
+
+sauropod-header {
+  & [data-action="stop"]:disabled {
+    display: none;
   }
 }
 
@@ -268,4 +266,3 @@ sauropod-main {
   animation-fill-mode: forwards;
   transform-origin: 50% 0;
 }
-
