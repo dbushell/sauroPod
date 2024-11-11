@@ -1,6 +1,6 @@
 @font-face {
-  font-family: "RedditMono";
-  src: url("/fonts/RedditMono-Light.woff2?v=%DEPLOY_HASH%") format("woff2");
+  font-family: 'RedditMono';
+  src: url('/fonts/RedditMono-Light.woff2?v=%DEPLOY_HASH%') format('woff2');
   font-display: swap;
   font-weight: 400;
   font-style: normal;
@@ -9,11 +9,10 @@
 }
 
 :root {
-  --color-orange: 80% 0.16 78;
-  --color-red: 60% 0.2 18;
-  --font-display: "Sora", sans-serif;
-  --font-sans: "Sora", sans-serif;
-  --font-monospace: "RedditMono", monospace;
+  --color-primary: light-dark(oklch(75% 0.172 150), oklch(75% 0.172 150));
+  --color-secondary: light-dark(oklch(70% 0.162 250), oklch(70% 0.162 250));
+  --color-red: oklch(60% 0.2 18);
+  --font-monospace: 'RedditMono', monospace;
 
   &.navigating * {
     cursor: wait;
@@ -22,6 +21,18 @@
 
 * {
   touch-action: manipulation;
+}
+
+body {
+  --font-size-00: clamp(
+    calc(14 * var(--rem)),
+    calc((14 * var(--rem)) + (16 - 14) * var(--fluid)),
+    calc(16 * var(--rem))
+  );
+}
+
+:is(small, .small) {
+  --font-size: var(--font-size-00);
 }
 
 :is(sauropod-bookmarks, sauropod-episodes, sauropod-header) {
@@ -36,17 +47,17 @@
   display: none !important;
 }
 
-img:where([src*="/artwork/"]) {
+img:where([src*='/artwork/']) {
   --size: calc(2 * var(--font-size) * var(--line-height));
   block-size: var(--size);
-  border-radius: calc(5 / 16 * 1rem);
+  border-radius: 5px;
   inline-size: var(--size);
   overflow: clip;
 }
 
 h1 {
-  --font-size: var(--step-3);
-  color: oklch(var(--color-anchor));
+  --font-size: var(--font-size-3);
+  color: var(--color-anchor);
 
   & a {
     text-decoration: none;
@@ -58,15 +69,15 @@ h1 {
 }
 
 .color-warn {
-  color: oklch(var(--color-red));
+  color: var(--color-red);
 }
 
 .color-success {
-  color: oklch(var(--color-green));
+  color: var(--color-primary);
 }
 
 .color-active {
-  color: oklch(var(--color-secondary));
+  color: var(--color-secondary);
 }
 
 .Button--warn {
@@ -75,7 +86,7 @@ h1 {
 }
 
 .Progress {
-  --size: calc(2 / 16 * 1rem);
+  --size: 2px;
 }
 
 .Icon {
@@ -118,7 +129,7 @@ h1 {
     }
   }
 
-  & progress[value="0"] {
+  & progress[value='0'] {
     display: none;
   }
 }
@@ -129,7 +140,7 @@ h1 {
     user-select: none;
 
     &:not(.hidden) {
-      font-size: calc(8 / 16 * 1rem);
+      font-size: 8px;
       font-family: var(--font-monospace);
       font-weight: 400;
       inset-block-start: 50%;
@@ -148,8 +159,13 @@ h1 {
 }
 
 sauropod-header {
-  & [data-action="stop"]:disabled {
+  & [data-action='stop']:disabled {
     display: none;
+  }
+
+  & .Button {
+    padding-inline: 0;
+    inline-size: calc(1.1 * var(--button-height));
   }
 }
 
@@ -158,49 +174,53 @@ sauropod-player {
   inset-block-start: 0;
   z-index: 1;
 
-  & [data-action="pause"]:disabled {
+  & [data-action='pause']:disabled {
     display: none;
   }
 
-  &:not(:has([data-action="pause"]:disabled)) {
-    & [data-action="play"]:disabled {
+  &:not(:has([data-action='pause']:disabled)) {
+    & [data-action='play']:disabled {
       display: none;
     }
   }
 
-  & [role="tooltip"] {
+  & [role='tooltip'] {
     --offset: calc(
-      (100% - var(--space-m)) / var(--range-max) * var(--range-value)
+      (100% - var(--size-5)) / var(--range-max) * var(--range-value)
     );
 
-    color: oklch(var(--color-bg-default));
+    color: var(--color-bg-1);
     display: block;
-    background: oklch(var(--color-primary));
+    background: var(--color-primary);
     background-image: linear-gradient(
-      45deg,
-      oklch(var(--color-secondary)),
-      oklch(var(--color-primary))
+      in oklch 45deg,
+      var(--color-secondary),
+      var(--color-primary)
     );
-    border-radius: calc(8 / 16 * 1rem);
-    font-size: var(--step-0);
+    border-radius: 8px;
+    font-size: var(--font-size-0);
     font-weight: 700;
-    inset-block-end: calc(100% + var(--space-2xs));
+    inset-block-end: calc(100% + 6px);
     inset-inline-start: var(--offset);
     line-height: 1;
-    padding: var(--space-3xs) var(--space-2xs);
+    padding: 6px 4px;
     position: absolute;
     text-transform: uppercase;
-    transform: translateX(calc(-50% + var(--space-m) / 2));
+    transform: translateX(-25%);
     z-index: 99;
   }
 
+  & :has(.Progress + .Range) {
+    position: relative;
+  }
+
   & .Progress {
-    --size: var(--space-m);
+    --size: var(--size-5);
     margin-block-end: calc(-1 * var(--size));
   }
 
   & .Range {
-    --color-bg-lighter: 0% 0 0 / 0;
+    --background-color: 0% 0 0 / 0;
   }
 
   & .Seek {
@@ -215,10 +235,9 @@ sauropod-player {
     margin: 0;
 
     & .Button {
-      --icon-scale: 1.3;
+      --icon-scale: 1;
       flex-grow: 1;
-      min-inline-size: var(--button-height);
-      max-inline-size: calc(160 / 16 * 1rem);
+      max-inline-size: min(160px, 32%);
       padding-inline: 0;
       position: relative;
     }

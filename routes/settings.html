@@ -14,9 +14,9 @@
 
 <pod-layout title="Settings">
   <h1>{{title}}</h1>
-  <form class="Stack gap-xs" method="POST" action="/api/podcasts/">
+  <form class="Stack gap-s" method="POST" action="/api/podcasts/">
     <label for="url" class="p">Add Feed URL:</label>
-    <div class="flex gap-xs">
+    <div class="flex gap-s">
       <input required type="url" name="url" id="url" class="Field flex-grow-1" autocomplete="off" />
       <pod-button type="submit" label="Add New" classes="{{['flex-shrink-0']}}" />
     </div>
@@ -24,9 +24,9 @@
   <pod-list empty="No podcasts found">
     <ssr-for item="podcast" of="podcasts">
       <li>
-        <form class="Stack gap-xs" method="POST" action="/api/podcasts/{{podcast.id}}/">
+        <form class="Stack gap-s" method="POST" action="/api/podcasts/{{podcast.id}}/">
           <label for="{{podcast.id}}-url" class="small">{{podcast.title}}:</label>
-          <div class="flex gap-xs">
+          <div class="flex gap-s">
             <input
               readonly
               required

@@ -34,6 +34,8 @@ if (import.meta.main) {
     }
     const contentType = response.headers.get("content-type");
     if (
+      contentType?.includes("json") ||
+      contentType?.includes("text/css") ||
       contentType?.includes("text/html") ||
       contentType?.includes("text/javascript")
     ) {

@@ -13,7 +13,7 @@ networks:
 services:
   denokv:
     container_name: sauropod_denokv
-    image: ghcr.io/denoland/denokv:0.7.0
+    image: ghcr.io/denoland/denokv:0.8.3
     command: --sqlite-path /data/denokv.sqlite serve --access-token ${DENO_KV_ACCESS_TOKEN}
     restart: unless-stopped
     environment:

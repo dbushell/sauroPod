@@ -23,13 +23,13 @@
   </h1>
   <pod-list empty="No audiobooks found">
     <li>
-      <a class="flex gap-xs jc-between ai-start" href="/audiobooks/">
+      <a class="flex gap-s jc-between ai-start" href="/audiobooks/">
         <span class="p color-subtle">Return</span>
       </a>
     </li>
     <ssr-for item="album" of="albums">
       <li>
-        <a class="flex gap-xs jc-between ai-start" href="/audiobooks/{{album.artistId}}/{{album.id}}/">
+        <a class="flex gap-s jc-between ai-start" href="/audiobooks/{{album.artistId}}/{{album.id}}/">
           <span class="p">{{album.title}}</span>
           <span class="color-subtle small monospace">{{album.count}}</span>
         </a>

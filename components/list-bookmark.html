@@ -33,15 +33,15 @@
     entity.type === 'podcast' ? `/episodes/${entity.ids[1]}/` : `/songs/${entity.ids.join('/')}/`;
 </script>
 
-<article id="bookmark-{{entity.ids.at(-1)}}" data-audio="{{dataAudio}}" data-delete="{{dataDelete}}" data-href="{{dataHref}}" class="Stack gap-xs">
+<article id="bookmark-{{entity.ids.at(-1)}}" data-audio="{{dataAudio}}" data-delete="{{dataDelete}}" data-href="{{dataHref}}" class="Stack gap-s">
   <p>
     <ssr-if condition="entity.type === 'podcast'">
       <img alt="{{entity.titles[0]}}" src="/api/artwork/{{entity.ids[0]}}/" class="Icon" decoding="async" fetchpriority="low" loading="lazy" />
     </ssr-if>
     <span>{{entity.titles.at(-1)}}</span>
   </p>
-  <div class="flex flex-wrap jc-between gap-xs ai-center">
-    <div class="small flex flex-wrap gap-xs ai-baseline">
+  <div class="flex flex-wrap jc-between gap-s ai-center">
+    <div class="small flex flex-wrap gap-s ai-baseline">
       <data class="monospace color-subtle" value="{{entity.bookmark.position}}">
         {{entity.bookmark.positionFormat}}
       </data>
@@ -50,18 +50,18 @@
       </a>
     </div>
     <div class="flex flex-wrap gap-2xs ai-center">
-      <pod-button icon small type="button" data-action="purge" classes="{{['hidden']}}" label="remove offline download">
+      <pod-button icon type="button" data-action="purge" classes="{{['hidden']}}" label="remove offline download">
         <ssr-fragment slot="icon"><icon-trash /></ssr-fragment>
       </pod-button>
-      <pod-button icon small type="button" data-action="download" classes="{{['hidden']}}" label="download for offline play">
+      <pod-button icon type="button" data-action="download" classes="{{['hidden']}}" label="download for offline play">
         <ssr-fragment slot="icon"><icon-download /></ssr-fragment>
       </pod-button>
       <div class="Button-group mb-0">
-        <pod-button icon small type="button" data-action="delete" classes="{{['Button--warn']}}" label="remove bookmark">
+        <pod-button icon type="button" data-action="delete" classes="{{['Button--warn']}}" label="remove bookmark">
           <ssr-fragment slot="icon"><icon-bookmarkx /></ssr-fragment>
         </pod-button>
       </div>
-      <pod-button icon small type="button" data-action="play" label="resume playback">
+      <pod-button icon type="button" data-action="play" label="resume playback">
         <ssr-fragment slot="icon"><icon-play /></ssr-fragment>
       </pod-button>
     </div>
