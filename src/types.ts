@@ -1,69 +1,13 @@
-export type Bookmark = {
-  ids: Array<string>;
-  /** Time listened up to (seconds) */
-  position: number;
-  positionFormat?: string;
-  progress?: number;
-  date: Date;
-};
+import type {
+  Album,
+  Artist,
+  Bookmark,
+  Episode,
+  Podcast,
+  Song,
+} from "./arktypes.ts";
 
-export type Episode = {
-  id: string;
-  podcastId: string;
-  date: Date;
-  dateFormat?: string;
-  url: string;
-  title: string;
-  /** Audio duration (seconds) */
-  duration: number;
-  durationFormat?: string;
-  mimetype: string;
-  guid?: string;
-  played?: boolean;
-};
-
-export type Podcast = {
-  id: string;
-  modified: Date;
-  modifiedFormat?: string;
-  url: string;
-  title: string;
-  image: string;
-  /** Total number of episodes */
-  count: number;
-  latestId: string;
-  /** Update to bust cache */
-  apiCache: Date;
-};
-
-export type Artist = {
-  id: string;
-  title: string;
-  path: string;
-  /** Total number of books */
-  count: number;
-};
-
-export type Album = {
-  id: string;
-  artistId: string;
-  title: string;
-  path: string;
-  /** Total number of songs */
-  count: number;
-};
-
-export type Song = {
-  id: string;
-  artistId: string;
-  albumId: string;
-  title: string;
-  path: string;
-  /** Audio duration (seconds) */
-  duration: number;
-  durationFormat?: string;
-  mimetype: string;
-};
+export { Album, Artist, Bookmark, Episode, Podcast, Song };
 
 export type AudioEntity = {
   type: "audiobook" | "podcast";

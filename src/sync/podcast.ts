@@ -6,7 +6,7 @@ import type { Podcast } from "@src/types.ts";
 import { Queue } from "@dbushell/carriageway";
 import * as html from "@std/html";
 import * as xml from "@dbushell/xml-streamify";
-import * as kv from "@src/kv/mod.ts";
+import * as kv from "@src/sqlite/mod.ts";
 
 const queue = new Queue<URL, Podcast>({
   concurrency: 5,
@@ -17,6 +17,7 @@ const callback = async (url: URL): Promise<Podcast> => {
   const data: Partial<Podcast> = (await kv.getPodcastByURL(url.href)) ?? {
     id: kv.uuid(),
     url: url.href,
+    count: 0,
   };
   // Remove existing data to ensure updates
   data.title = undefined;

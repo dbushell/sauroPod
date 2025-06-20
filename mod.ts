@@ -32,6 +32,9 @@ if (import.meta.main) {
     if (!(response instanceof Response)) {
       return response;
     }
+    if (response.status === 304) {
+      return response;
+    }
     const contentType = response.headers.get("content-type");
     if (
       contentType?.includes("json") ||

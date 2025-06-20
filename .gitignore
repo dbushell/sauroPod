@@ -9,6 +9,7 @@
 src/**/*.*
 !src/**/*.ts
 !src/**/LICENSE
+!src/sqlite/schema.sql
 !components
 components/**/*.*
 !components/**/*.html

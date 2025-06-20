@@ -7,7 +7,7 @@ import { Queue } from "@dbushell/carriageway";
 import { log } from "@src/log.ts";
 import * as html from "@std/html";
 import * as xml from "@dbushell/xml-streamify";
-import * as kv from "@src/kv/mod.ts";
+import * as kv from "@src/sqlite/mod.ts";
 import { encodeHash } from "@src/utils/mod.ts";
 
 const queue = new Queue<Podcast, void>({
@@ -106,7 +106,7 @@ const callback = async (podcast: Podcast): Promise<void> => {
   oldEpisodes
     .filter((e) => !episodeIds.has(e.id))
     .forEach((e) => {
-      kv.deleteEpisode(e);
+      kv.deleteEpisode(e.id);
     });
 
   // Update modified date for Podcast

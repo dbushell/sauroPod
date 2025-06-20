@@ -11,7 +11,7 @@ import type {
   Song,
 } from "@src/types.ts";
 import { log } from "@src/log.ts";
-import * as kv from "@src/kv/mod.ts";
+import * as kv from "@src/sqlite/mod.ts";
 import * as cache from "@src/cache/mod.ts";
 
 addEventListener(
@@ -50,15 +50,11 @@ addEventListener(
 
 addEventListener(
   "podcast:delete",
-  (async (event: CustomEvent<Podcast>) => {
+  ((event: CustomEvent<Podcast>) => {
     const podcast = event.detail;
     log.info(`Delete podcast: "${podcast.title}"`);
     // Delete artwork
     cache.purge(new URL(podcast.image));
-    // Delete all Episodes
-    for (const episode of await kv.getEpisodes(podcast.id)) {
-      await kv.deleteEpisode(episode);
-    }
   }) as unknown as EventListener,
 );
 
@@ -78,25 +74,17 @@ addEventListener(
 
 addEventListener(
   "artist:delete",
-  (async (event: CustomEvent<Artist>) => {
+  ((event: CustomEvent<Artist>) => {
     const artist = event.detail;
     log.debug(`Delete artist: "${artist.title}"`);
-    // Delete albums
-    for (const album of await kv.getAlbums(artist)) {
-      kv.deleteMedia("album", album.artistId, album.id);
-    }
   }) as unknown as EventListener,
 );
 
 addEventListener(
   "album:delete",
-  (async (event: CustomEvent<Album>) => {
+  ((event: CustomEvent<Album>) => {
     const album = event.detail;
     log.debug(`Delete album: "${album.title}"`);
-    // Delete songs
-    for (const song of await kv.getSongs(album)) {
-      kv.deleteMedia("song", song.artistId, song.albumId, song.id);
-    }
   }) as unknown as EventListener,
 );
 

@@ -9,9 +9,9 @@ import { log } from "@src/log.ts";
 import * as path from "@std/path";
 import { serveFile } from "@std/http";
 import { Queue } from "@dbushell/carriageway";
-import { db } from "@src/kv/mod.ts";
 import { fetchSortQueue } from "@src/utils/mod.ts";
 import { encodeHash } from "@src/utils/mod.ts";
+import * as db from "@src/sqlite/mod.ts";
 
 const cachePath = Deno.env.get("APP_CACHE_PATH") ??
   path.join(Deno.cwd(), "./.cache");
@@ -55,12 +55,10 @@ worker.addEventListener(
     if (request) {
       const response = await serveFile(request, pathname);
       // Restore content type from KV store
-      const contentType = await db.get<string>([
-        "fetch",
-        item.hash,
-        "content-type",
-      ]);
-      response.headers.set("content-type", contentType.value ?? "audio/mpeg");
+      const contentType = await db.getMeta<string>(
+        `cache:${item.hash}:content-type`,
+      );
+      response.headers.set("content-type", contentType?.value ?? "audio/mpeg");
       deferred.resolve(response);
       return;
     }
@@ -159,8 +157,16 @@ export const push = (
   options: { hash: string; contentType: string; maxAge: number },
 ): Promise<unknown> => {
   return Promise.all([
-    db.set(["fetch", options.hash, "content-type"], options.contentType),
-    db.set(["fetch", options.hash, "max-age"], options.maxAge),
+    db.setMeta({
+      key: `cache:${options.hash}:content-type`,
+      value: options.contentType,
+      type: "string",
+    }),
+    db.setMeta({
+      key: `cache:${options.hash}:max-age`,
+      value: options.maxAge,
+      type: "number",
+    }),
     Deno.writeFile(path.join(cachePath, options.hash), data),
   ]);
 };
@@ -173,8 +179,8 @@ export const purge = async (url: string | URL): Promise<void> => {
   const hash = url instanceof URL ? await encodeHash(url.href) : url;
   try {
     // Cleanup metadata
-    for await (const entry of db.list({ prefix: ["fetch", hash] })) {
-      await db.delete(entry.key);
+    for (const key of await db.getMetaKeys(`cache:${hash}:`)) {
+      await db.deleteMeta(key);
     }
     await Deno.remove(path.join(cachePath, hash));
     log.debug(`Purged cache: ${url}`);
@@ -189,7 +195,7 @@ export const clean = async () => {
   for await (const entry of walk) {
     const stat = await Deno.stat(entry.path);
     if (!stat.birthtime) continue;
-    const maxAge = await db.get<number>(["fetch", entry.name, "max-age"]);
+    const maxAge = await db.getMeta<number>(`cache:${entry.name}:max-age`);
     const age = Date.now() - stat.birthtime.getTime();
     if (age >= (maxAge?.value ?? 0)) {
       await purge(entry.name);

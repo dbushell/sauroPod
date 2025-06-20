@@ -1,44 +1,24 @@
 # Required environment variables:
-# DENO_KV_ACCESS_TOKEN - random string
 # APP_MEDIA_PATH - directory path
 # APP_CACHE_PATH - directory path
 # APP_DATA_PATH - directory path
-
-networks:
-  frontend:
-    driver: bridge
-  backend:
-    driver: bridge
-
+# APP_DATA_URL - internal file:// path
 services:
-  denokv:
-    container_name: sauropod_denokv
-    image: ghcr.io/denoland/denokv:0.8.3
-    command: --sqlite-path /data/denokv.sqlite serve --access-token ${DENO_KV_ACCESS_TOKEN}
-    restart: unless-stopped
-    environment:
-      DENO_KV_ACCESS_TOKEN: ${DENO_KV_ACCESS_TOKEN}
-    volumes:
-      - ${APP_DATA_PATH}:/data
-    networks:
-      - backend
-
   deno:
-    container_name: sauropod_deno
-    image: denoland/deno:2.0.0
-    command: deno run --no-lock --unstable-kv --unstable-cron --allow-all /app/mod.ts --dev --cron --sync
+    container_name: sauropod
+    image: denoland/deno:2.3.6
+    command: deno run --no-lock --unstable-cron --allow-all /app/mod.ts --dev --cron --sync
     restart: unless-stopped
-    depends_on:
-      - denokv
     environment:
-      DENO_KV_URL: http://denokv:4512
-      DENO_KV_ACCESS_TOKEN: ${DENO_KV_ACCESS_TOKEN}
       APP_MEDIA_PATH: /mnt/media
       APP_CACHE_PATH: /mnt/cache
+      APP_DATA_PATH: /mnt/data
+      APP_DATA_URL: ${APP_DATA_URL}
       APP_LOG_LEVEL: ${APP_LOG_LEVEL}
     volumes:
       - ${APP_MEDIA_PATH}:/mnt/media:ro
       - ${APP_CACHE_PATH}:/mnt/cache
+      - ${APP_DATA_PATH}:/mnt/data
       - ./components:/app/components:ro
       - ./routes:/app/routes:ro
       - ./src:/app/src:ro
@@ -46,6 +26,3 @@ services:
       - ./app.html:/app/app.html:ro
       - ./deno.jsonc:/app/deno.jsonc:ro
       - ./mod.ts:/app/mod.ts:ro
-    networks:
-      - frontend
-      - backend

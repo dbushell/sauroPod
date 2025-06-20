@@ -1,5 +1,5 @@
 /**
- * Client-side Svelte store for offline downloads.
+ * Client-side storage for offline downloads.
  * Interacts with the Web Worker found in `static/worker.js`.
  * @module
  * @see {@link https://dbushell.com/2023/10/02/storage-apis-downloading-files-for-offline-access/}

@@ -1,6 +1,6 @@
 import type { HyperHandle } from "@dbushell/hyperserve";
 import type { APIData } from "@src/types.ts";
-import * as kv from "@src/kv/mod.ts";
+import * as kv from "@src/sqlite/mod.ts";
 
 export const pattern = "/";
 

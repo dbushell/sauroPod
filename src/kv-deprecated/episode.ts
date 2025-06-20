@@ -5,7 +5,7 @@
 import type { Episode } from "@src/types.ts";
 import { db, isEpisode, isUUID } from "./mod.ts";
 import { newestSort } from "@src/utils/mod.ts";
-import { getPodcast } from "@src/kv/podcast.ts";
+import { getPodcast } from "./podcast.ts";
 
 /** Return all Episodes */
 export const getEpisodes = async (

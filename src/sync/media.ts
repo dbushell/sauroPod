@@ -7,7 +7,7 @@ import type { Album, Artist, Song } from "@src/types.ts";
 import { log } from "@src/log.ts";
 import * as path from "@std/path";
 import { duration as audioDuration } from "@dbushell/audio-duration";
-import * as db from "@src/kv/mod.ts";
+import * as kv from "@src/sqlite/mod.ts";
 
 /** File extensions to consider as audio when syncing media */
 const EXTENSIONS = ["mp3", "mp4", "m4a", "m4b"];
@@ -88,12 +88,12 @@ export const ensureArtist = async (
   );
   if (artist) return artist;
   artist = {
-    id: db.uuid(),
+    id: kv.uuid(),
     title: entry.title,
     path: entry.path,
     count: 0,
   };
-  const result = await db.setMedia<Artist>("artist", artist);
+  const result = await kv.setMedia<Artist>("artist", artist);
   if (result) return artist;
   throw new Error(`Artist "${entry.path}"`);
 };
@@ -109,13 +109,13 @@ export const ensureAlbum = async (
   );
   if (album) return album;
   album = {
-    id: db.uuid(),
+    id: kv.uuid(),
     artistId: artist.id,
     title: entry.title,
     path: entry.path,
     count: 0,
   };
-  const result = await db.setMedia<Album>("album", album);
+  const result = await kv.setMedia<Album>("album", album);
   if (result) return album;
   throw new Error(`Album "${entry.path}"`);
 };
@@ -140,7 +140,7 @@ export const ensureSong = async (
       throw new Error(`Duration "${entry.path}"`);
     }
     song = {
-      id: db.uuid(),
+      id: kv.uuid(),
       artistId: artist.id,
       albumId: album.id,
       title: entry.title,
@@ -148,7 +148,7 @@ export const ensureSong = async (
       duration,
       mimetype,
     };
-    const result = await db.setMedia<Song>("song", song);
+    const result = await kv.setMedia<Song>("song", song);
     if (result) return song;
     throw new Error(`Song "${entry.path}"`);
   } catch (err) {
@@ -159,49 +159,49 @@ export const ensureSong = async (
 export const syncMedia = async () => {
   if (!checkMediaPath()) return;
   const now = performance.now();
-  const artists = await db.getArtists();
+  const artists = await kv.getArtists();
   const media = await mapMedia(mediaPath);
   for (const entry of media) {
     const artist = await ensureArtist(entry, artists);
-    const albums = await db.getAlbums(artist);
+    const albums = await kv.getAlbums(artist);
     for (const albumEntry of entry.albums) {
       const album = await ensureAlbum(albumEntry, albums, artist);
-      const songs = await db.getSongs(album);
+      const songs = await kv.getSongs(album);
       for (const songEntry of albumEntry.songs) {
         await ensureSong(songEntry, songs, artist, album);
       }
       if (album.count !== songs.length) {
         album.count = songs.length;
-        await db.setMedia<Artist>("album", album);
+        await kv.setMedia<Artist>("album", album);
       }
     }
     if (artist.count !== albums.length) {
       artist.count = albums.length;
-      await db.setMedia<Artist>("artist", artist);
+      await kv.setMedia<Artist>("artist", artist);
     }
   }
-  for (const artist of await db.getArtists()) {
+  for (const artist of await kv.getArtists()) {
     try {
       const stat = await Deno.lstat(artist.path);
       if (!stat.isDirectory) throw new Error();
     } catch {
-      await db.deleteMedia<Artist>("artist", artist.id);
+      await kv.deleteMedia<Artist>("artist", artist.id);
     }
   }
-  for (const album of await db.getAlbums()) {
+  for (const album of await kv.getAlbums()) {
     try {
       const stat = await Deno.lstat(album.path);
       if (!stat.isDirectory) throw new Error();
     } catch {
-      await db.deleteMedia<Album>("album", album.artistId, album.id);
+      await kv.deleteMedia<Album>("album", album.artistId, album.id);
     }
   }
-  for (const song of await db.getSongs()) {
+  for (const song of await kv.getSongs()) {
     try {
       const stat = await Deno.lstat(song.path);
       if (!stat.isFile) throw new Error();
     } catch {
-      await db.deleteMedia<Song>("song", song.artistId, song.albumId, song.id);
+      await kv.deleteMedia<Song>("song", song.artistId, song.albumId, song.id);
     }
   }
   log.info(`Media sync in ${((performance.now() - now) / 1000).toFixed(2)}s`);

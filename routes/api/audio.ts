@@ -1,7 +1,6 @@
 import type { HyperHandle } from "@dbushell/hyperserve";
-import type { Song } from "@src/types.ts";
 import { serveFile } from "@std/http";
-import * as kv from "@src/kv/mod.ts";
+import * as kv from "@src/sqlite/mod.ts";
 import * as cache from "@src/cache/mod.ts";
 
 const id = "[a-f\\d]{8}-[a-f\\d]{4}-4[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}";
@@ -17,7 +16,7 @@ export const GET: HyperHandle = async (
   const ids = id.split("/");
   if (ids.length === 3) {
     // Serve audio by Song ID
-    const song = await kv.getMedia<Song>("song", ...ids);
+    const song = await kv.getSong(ids[0], ids[1], ids[2]);
     if (!song) return error;
     const response = await serveFile(request, song.path);
     response.headers.set("content-type", song.mimetype);

@@ -7,7 +7,7 @@ import type { CacheItem } from "@src/types.ts";
 import * as path from "@std/path";
 import * as mediaTypes from "@std/media-types";
 import { deepFreeze } from "@src/utils/mod.ts";
-import { db } from "@src/kv/mod.ts";
+import * as db from "@src/sqlite/mod.ts";
 import { log } from "@src/log.ts";
 
 const cachePath = Deno.env.get("APP_CACHE_PATH") ??
@@ -115,8 +115,18 @@ const handleFetch = async (item: CacheItem): Promise<number> => {
         "audio/mpeg";
 
     // Save metadata
-    await db.set(["fetch", hash, "content-type"], contentType);
-    await db.set(["fetch", hash, "max-age"], item.options.maxAge);
+    await Promise.all([
+      db.setMeta({
+        key: `cache:${hash}:content-type`,
+        value: contentType,
+        type: "string",
+      }),
+      db.setMeta({
+        key: `cache:${hash}:max-age`,
+        value: item.options.maxAge ?? 1000 * 60 * 60,
+        type: "number",
+      }),
+    ]);
 
     const file = await Deno.open(pathname, {
       create: true,

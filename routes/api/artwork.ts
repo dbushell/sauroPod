@@ -1,5 +1,5 @@
 import type { HyperHandle } from "@dbushell/hyperserve";
-import * as kv from "@src/kv/mod.ts";
+import * as kv from "@src/sqlite/mod.ts";
 import * as cache from "@src/cache/mod.ts";
 
 const id = "[a-f\\d]{8}-[a-f\\d]{4}-4[a-f\\d]{3}-[a-f\\d]{4}-[a-f\\d]{12}";
