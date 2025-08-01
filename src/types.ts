@@ -42,22 +42,6 @@ export type APIData = {
   songs?: Array<Song & { bookmark?: Bookmark }>;
 };
 
-// export type ServerData = APIData & {
-//   fragment?: boolean;
-// };
-
-// export type PublicData = {
-//   app: string;
-//   dev: boolean;
-//   version: string;
-//   page?: number;
-// };
-
-// export type Data = {
-//   publicData: PublicData;
-//   serverData: ServerData;
-// };
-
 export type CacheOptions = {
   maxAge?: number;
   media?: "audio" | "image" | "json" | "rss";

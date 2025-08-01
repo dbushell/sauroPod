@@ -2,7 +2,7 @@
  * Media KV module.
  * @module
  */
-import { ark } from "arktype";
+import * as ark from "arktype";
 import * as dz from "drizzle-orm";
 import {
   type Album,

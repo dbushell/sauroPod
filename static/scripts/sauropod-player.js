@@ -270,10 +270,13 @@ class Component extends HTMLElement {
     if (position === this.#onLoadedPosition) {
       return;
     }
+    const duration = Number.isFinite(this.#audio.duration + 0)
+      ? this.#audio.duration
+      : this.entity.duration;
     /** @type {Bookmark} */
     const detail = {
       position,
-      progress: Math.round((100 / this.entity.duration) * position),
+      progress: Math.round((100 / duration) * position),
       ids: this.entity.ids,
       date: new Date(),
     };

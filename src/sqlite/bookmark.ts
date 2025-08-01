@@ -2,7 +2,7 @@
  * Bookmark SQLite module.
  * @module
  */
-import { ark } from "arktype";
+import * as ark from "arktype";
 import * as dz from "drizzle-orm";
 import { type Bookmark, bookmark, type Podcast } from "@src/arktypes.ts";
 import { bookmarkTable, db } from "./drizzle.ts";

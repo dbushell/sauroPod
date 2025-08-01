@@ -75,3 +75,4 @@ export const db = drizzle(client);
 
 await db.run("PRAGMA journal_mode = WAL;");
 await db.run("PRAGMA foreign_keys = ON;");
+await db.run("PRAGMA busy_timeout = 10000;");

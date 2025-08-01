@@ -68,6 +68,10 @@ h1 {
   line-height: inherit;
 }
 
+.mis-auto {
+  margin-inline-start: auto;
+}
+
 .color-warn {
   color: var(--color-red);
 }
@@ -247,14 +251,14 @@ sauropod-player {
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: scale(1.1);
+    transform: translateY(60px);
   }
 }
 
 @keyframes fade-out {
   to {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.5);
   }
 }
 
@@ -263,6 +267,7 @@ sauropod-player {
 }
 
 sauropod-main {
+  --background-opacity: 1;
   view-transition-name: main;
 }
 
@@ -275,13 +280,13 @@ sauropod-main {
 }
 
 ::view-transition-new(main) {
-  animation: 300ms fade-in;
+  animation: 500ms fade-in;
   animation-fill-mode: forwards;
   transform-origin: 50% 0;
 }
 
 ::view-transition-old(main) {
-  animation: 150ms fade-out;
+  animation: 500ms fade-out;
   animation-fill-mode: forwards;
   transform-origin: 50% 0;
 }

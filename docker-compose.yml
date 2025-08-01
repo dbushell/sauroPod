@@ -6,7 +6,7 @@
 services:
   deno:
     container_name: sauropod
-    image: denoland/deno:2.3.6
+    image: denoland/deno:2.4.1
     command: deno run --no-lock --unstable-cron --allow-all /app/mod.ts --dev --cron --sync
     restart: unless-stopped
     environment:

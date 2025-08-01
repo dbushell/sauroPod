@@ -6,7 +6,7 @@
   "imports": {
     "@dbushell/audio-duration": "jsr:@dbushell/audio-duration@^0.7.0",
     "@dbushell/carriageway": "jsr:@dbushell/carriageway@^1.1.0",
-    "@dbushell/hyperless": "jsr:@dbushell/hyperless@^0.31.0",
+    "@dbushell/hyperless": "jsr:@dbushell/hyperless@^0.32.0",
     "@dbushell/hyperserve": "jsr:@dbushell/hyperserve@^0.22.0",
     "@dbushell/xml-streamify": "jsr:@dbushell/xml-streamify@^0.7.0",
     "@libsql/client": "npm:@libsql/client@^0.15.9",
@@ -14,12 +14,12 @@
     "@std/assert": "jsr:@std/assert@^1.0.13",
     "@std/crypto": "jsr:@std/crypto@^1.0.5",
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
-    "@std/fs": "jsr:@std/fs@^1.0.18",
+    "@std/fs": "jsr:@std/fs@^1.0.19",
     "@std/html": "jsr:@std/html@^1.0.4",
-    "@std/http": "jsr:@std/http@^1.0.18",
+    "@std/http": "jsr:@std/http@^1.0.19",
     "@std/log": "jsr:@std/log@^0.224.14",
     "@std/media-types": "jsr:@std/media-types@^1.1.0",
-    "@std/path": "jsr:@std/path@^1.1.0",
+    "@std/path": "jsr:@std/path@^1.1.1",
     "arktype": "npm:arktype@^2.1.20",
     "drizzle-orm": "npm:drizzle-orm@^0.44.2"
   }

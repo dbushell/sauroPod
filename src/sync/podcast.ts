@@ -67,6 +67,7 @@ const callback = async (url: URL): Promise<Podcast> => {
   clearTimeout(timeout);
   data.modified ??= modified;
   if (image) data.image = image;
+  data.image ??= "http://localhost:8000/placeholder.png";
   if (data.title === undefined) {
     throw new Error(`Feed missing title: "${url}"`);
   }

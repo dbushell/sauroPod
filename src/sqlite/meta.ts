@@ -2,7 +2,7 @@
  * Meta SQLite module.
  * @module
  */
-import { ark } from "arktype";
+import * as ark from "arktype";
 import * as dz from "drizzle-orm";
 import { type Meta, meta } from "@src/arktypes.ts";
 import { db, metaTable } from "./drizzle.ts";

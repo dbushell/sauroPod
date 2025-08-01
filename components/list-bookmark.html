@@ -49,18 +49,16 @@
         {{entity.titles.at(-2)}}
       </a>
     </div>
-    <div class="flex flex-wrap gap-2xs ai-center">
+    <div class="flex flex-wrap gap-2xs ai-center mis-auto">
       <pod-button icon type="button" data-action="purge" classes="{{['hidden']}}" label="remove offline download">
         <ssr-fragment slot="icon"><icon-trash /></ssr-fragment>
       </pod-button>
       <pod-button icon type="button" data-action="download" classes="{{['hidden']}}" label="download for offline play">
         <ssr-fragment slot="icon"><icon-download /></ssr-fragment>
       </pod-button>
-      <div class="Button-group mb-0">
-        <pod-button icon type="button" data-action="delete" classes="{{['Button--warn']}}" label="remove bookmark">
-          <ssr-fragment slot="icon"><icon-bookmarkx /></ssr-fragment>
-        </pod-button>
-      </div>
+      <pod-button icon type="button" data-action="delete" classes="{{['Button--warn']}}" label="remove bookmark">
+        <ssr-fragment slot="icon"><icon-bookmarkx /></ssr-fragment>
+      </pod-button>
       <pod-button icon type="button" data-action="play" label="resume playback">
         <ssr-fragment slot="icon"><icon-play /></ssr-fragment>
       </pod-button>
